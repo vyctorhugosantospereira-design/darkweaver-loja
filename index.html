@@ -1036,8 +1036,7 @@
   <div class="section-label">// LOJA DE KITS</div>
   <h2 class="section-title">KITS DE ITENS</h2>
   <p class="section-desc">
-    Entrega automática no servidor assim que o pagamento for confirmado.
-    Itens aparecem direto no seu inventário.
+    Entrega automática após o pagamento. Se o jogador estiver offline, o kit fica reservado e será entregue quando ele entrar.
   </p>
   <div class="kit-grid" id="kit-grid">
     <div class="vip-loading">CARREGANDO KITS</div>
@@ -1064,7 +1063,7 @@
     </div>
     <div class="step">
       <h3>JOGUE COM VIP</h3>
-      <p>Ativação automática em até 1 minuto após confirmação do pagamento.</p>
+      <p>Após o pagamento, entre no servidor. Se estiver offline, o sistema aguarda você entrar para entregar automaticamente.</p>
     </div>
   </div>
 </section>
@@ -1492,19 +1491,17 @@ async function verificarPagamento(auto = false) {
       statusEl.className = 'pix-status paid';
 
       if (currentItemType === 'kit') {
-        try {
-          const deliverRes = await fetch(API_URL + '/api/kits/pix/deliver', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ paymentId: currentPaymentId, kitId: currentKitId, nick: currentNick })
-          });
-          const deliverData = await deliverRes.json();
-          if (!deliverRes.ok) throw new Error(deliverData.error || 'Erro na entrega');
+        const delivery = data.delivery || {};
+
+        if (delivery.delivered === true) {
           statusEl.textContent = '✅ PAGAMENTO CONFIRMADO — KIT ENTREGUE!';
           showToast('🎉 KIT ENTREGUE! VERIFIQUE SEU INVENTÁRIO!', 5000);
-        } catch (e) {
+        } else if (delivery.pending === true || delivery.reason === 'player_offline') {
           statusEl.textContent = '⏳ PAGAMENTO APROVADO — AGUARDANDO O PLAYER FICAR ONLINE';
-          showToast('⏳ Kit reservado. Será entregue automaticamente quando o jogador entrar no servidor.', 7000);
+          showToast('⏳ Kit reservado. Entre no servidor para receber automaticamente.', 7000);
+        } else {
+          statusEl.textContent = '⏳ PAGAMENTO APROVADO — AGUARDANDO ENTREGA AUTOMÁTICA';
+          showToast('⏳ Pagamento aprovado. O sistema está processando sua entrega.', 7000);
         }
       } else {
         statusEl.textContent = '✅ PAGAMENTO CONFIRMADO — VIP ATIVADO!';
