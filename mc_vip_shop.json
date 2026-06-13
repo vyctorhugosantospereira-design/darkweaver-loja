@@ -1,0 +1,66 @@
+[
+  {
+    "id": "vip_ferro",
+    "name": "💎🔥🛡️ VIP Ferro 🛡️🔥",
+    "price": 7.5,
+    "dias": 30,
+    "lpGroup": "vip_ferro",
+    "description": "Garanta 30 dias de VIP FERRO e receba kit diário exclusivo, tag VIP FERRO no chat, prioridade de entrada no servidor e vantagens básicas da categoria."
+  },
+  {
+    "id": "vip_ferro_plus",
+    "name": "🔥🛡️ VIP Ferro Plus 🛡️🔥",
+    "price": 14.99,
+    "dias": 30,
+    "lpGroup": "vip_ferro+",
+    "description": "Aproveite 30 dias de VIP FERRO+ e receba vantagens exclusivas! Acesso ao Kit Ferro+ diário, coleta do Kit Ferro padrão + Kit Ferro+, tag exclusiva no chat e prioridade para entrar no servidor."
+  },
+  {
+    "id": "vip_diamante",
+    "name": "💎👑 VIP Diamante 👑💎",
+    "price": 25.99,
+    "dias": 30,
+    "lpGroup": "vip_diamante",
+    "description": "30 dias de VIP DIAMANTE. Kit Diamante diário, tag exclusiva no chat, prioridade na fila, comandos VIP e mais praticidade para sua jornada."
+  },
+  {
+    "id": "vip_diamante_plus",
+    "name": "💎👑 VIP Diamante Plus 👑💎",
+    "price": 31.99,
+    "dias": 30,
+    "lpGroup": "vip_diamante+",
+    "description": "30 dias de VIP DIAMANTE PLUS. Kit Diamante diário, Kit Diamante Encantado diário, coleta do Kit Diamante e Kit Diamante Encantado, tag exclusiva [DIAMANTE+] no chat, prioridade de entrada e acesso a comandos VIP."
+  },
+  {
+    "id": "vip_netherita",
+    "name": "🖤👑 VIP Netherita 👑🖤",
+    "price": 41.99,
+    "dias": 30,
+    "lpGroup": "vip_netherita",
+    "description": "30 dias de VIP NETHERITA. Kit Netherita diário, tag exclusiva [NETHERITA] no chat, prioridade de entrada no servidor, acesso a comandos VIP e equipamentos poderosos todos os dias."
+  },
+  {
+    "id": "vip_netherita_plus",
+    "name": "🖤👑 VIP Netherita Plus 👑🖤",
+    "price": 52.99,
+    "dias": 30,
+    "lpGroup": "vip_netherita+",
+    "description": "30 dias de VIP NETHERITA PLUS. Kit Netherita diário, Kit Netherita Encantado diário, coleta do Kit Netherita e Kit Netherita Encantado, tag exclusiva [NETHERITA] no chat, prioridade de entrada e acesso a comandos VIP."
+  },
+  {
+    "id": "gladiador_diamante",
+    "name": "⚔️💎 Gladiador Diamante 💎⚔️",
+    "price": 83.99,
+    "dias": 30,
+    "lpGroup": "vip_gladiador_diamante",
+    "description": "30 dias de Gladiador Diamante. Kit PvP Diamante, Kit Imortal, coleta o Kit PvP Diamante e o Kit Imortal, encantamentos no auge do poder, tag exclusiva [GLADIADOR], prioridade de entrada e acesso a comandos VIP."
+  },
+  {
+    "id": "gladiador_netherita",
+    "name": "⚔️🖤 Gladiador Netherita 🖤⚔️",
+    "price": 199.99,
+    "dias": 30,
+    "lpGroup": "vip_gladiador_netherita",
+    "description": "30 dias de Gladiador Netherita. Kit PvP Netherita, Kit Imortal, coleta o Kit PvP Netherita e o Kit Imortal, encantamentos no auge do poder, tag exclusiva [GLADIADOR], prioridade de entrada e acesso a comandos VIP."
+  }
+]
