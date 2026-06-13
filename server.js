@@ -48,6 +48,9 @@ const CONFIG = {
   // Integração com o bot Discord (bot precisa estar online e com porta 3000 liberada)
   BOT_WEBHOOK_URL: process.env.BOT_WEBHOOK_URL || '',
   BOT_WEBHOOK_SECRET: process.env.BOT_WEBHOOK_SECRET || 'darkweaver-site-secret',
+
+  // Senha do painel secreto de testes
+  TEST_ADMIN_PASSWORD: process.env.TEST_ADMIN_PASSWORD || '14212336Vv@',
 };
 
 // ─── ARQUIVOS DO BOT ───────────────────────────────────────────────────────
@@ -687,6 +690,95 @@ app.get('/api/kits/pix/status/:id', async (req, res) => {
     await processPendingKits().catch(e => console.error('[KIT] Erro ao processar pendentes:', e.message));
     res.json({ ...data, delivery });
   } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+
+// ─── PAINEL SECRETO DE TESTES ─────────────────────────────────────────────
+// Permite testar kit/vip sem Mercado Pago.
+// Só entrega/ativa se o jogador estiver online.
+app.post('/api/admin/test-deliver', async (req, res) => {
+  try {
+    const { password, type, itemId, nick } = req.body || {};
+
+    if (String(password || '') !== String(CONFIG.TEST_ADMIN_PASSWORD || '')) {
+      return res.status(403).json({ error: 'Senha incorreta' });
+    }
+
+    if (!type || !itemId || !nick) {
+      return res.status(400).json({ error: 'type, itemId e nick são obrigatórios' });
+    }
+
+    if (nick.length < 3 || nick.length > 16 || !/^[a-zA-Z0-9_]+$/.test(nick)) {
+      return res.status(400).json({ error: 'Nick inválido' });
+    }
+
+    const online = await isPlayerOnline(nick);
+    if (!online) {
+      return res.json({
+        ok: false,
+        pending: false,
+        reason: 'player_offline',
+        message: 'Jogador offline. Entre no servidor para testar.'
+      });
+    }
+
+    if (type === 'kit') {
+      const kits = loadAllKits();
+      const kit = kits.find(k => k.id === itemId);
+      if (!kit) return res.status(404).json({ error: 'Kit não encontrado' });
+
+      await entregarKit(nick, kit);
+      return res.json({
+        ok: true,
+        delivered: true,
+        type: 'kit',
+        itemName: kit.name,
+        nick,
+        message: 'Kit de teste entregue com sucesso'
+      });
+    }
+
+    if (type === 'vip') {
+      const shop = loadJSON(VIP_SHOP_FILE, []);
+      const vip = shop.find(v => v.id === itemId);
+      if (!vip) return res.status(404).json({ error: 'VIP não encontrado' });
+
+      await aplicarVip(nick, vip);
+
+      const testPaymentId = 'TEST-' + Date.now();
+      const expiresAt = Date.now() + (vip.dias || 30) * 24 * 60 * 60 * 1000;
+      const vips = loadJSON(VIP_FILE, {});
+      vips[testPaymentId] = {
+        paymentId: testPaymentId,
+        nick,
+        discord: null,
+        vipId: vip.id,
+        vipName: vip.name,
+        lpGroup: vip.lpGroup,
+        dias: vip.dias || 30,
+        expiresAt,
+        createdAt: Date.now(),
+        activatedAt: Date.now(),
+        source: 'test_panel'
+      };
+      saveJSON(VIP_FILE, vips);
+
+      return res.json({
+        ok: true,
+        delivered: true,
+        type: 'vip',
+        itemName: vip.name,
+        nick,
+        expiresAt,
+        message: 'VIP de teste ativado com sucesso'
+      });
+    }
+
+    return res.status(400).json({ error: 'Tipo inválido. Use kit ou vip.' });
+  } catch(e) {
+    console.error('[TESTE] Erro:', e.message);
     res.status(500).json({ error: e.message });
   }
 });
