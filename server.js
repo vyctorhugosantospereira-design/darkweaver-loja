@@ -44,6 +44,10 @@ const CONFIG = {
   RCON_HOST:     'zoe.lura.pro',
   RCON_PORT:     35612,
   RCON_PASSWORD: process.env.RCON_PASSWORD || 'SUA_SENHA_RCON_AQUI',
+
+  // Integração com o bot Discord (bot precisa estar online e com porta 3000 liberada)
+  BOT_WEBHOOK_URL: process.env.BOT_WEBHOOK_URL || '',
+  BOT_WEBHOOK_SECRET: process.env.BOT_WEBHOOK_SECRET || 'darkweaver-site-secret',
 };
 
 // ─── ARQUIVOS DO BOT ───────────────────────────────────────────────────────
@@ -202,6 +206,49 @@ async function entregarKit(nick, kit) {
   console.log(`[KIT] ✅ Kit entregue: ${nick} → ${kit.name}`);
 }
 
+// ─── AVISAR BOT DISCORD ───────────────────────────────────────────────────
+function notifyBot(payload) {
+  return new Promise((resolve) => {
+    if (!CONFIG.BOT_WEBHOOK_URL) return resolve(false);
+
+    try {
+      const url = new URL(CONFIG.BOT_WEBHOOK_URL);
+      const data = JSON.stringify(payload);
+      const lib = url.protocol === 'https:' ? require('https') : require('http');
+
+      const opts = {
+        hostname: url.hostname,
+        port: url.port || (url.protocol === 'https:' ? 443 : 80),
+        path: url.pathname + (url.search || ''),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(data),
+          'x-site-secret': CONFIG.BOT_WEBHOOK_SECRET,
+        },
+        timeout: 10000,
+      };
+
+      const req = lib.request(opts, res => {
+        let raw = '';
+        res.on('data', c => raw += c);
+        res.on('end', () => {
+          const ok = res.statusCode >= 200 && res.statusCode < 300;
+          console.log('[SITE→BOT] status=' + res.statusCode + ' resposta=' + raw.slice(0,120));
+          resolve(ok);
+        });
+      });
+      req.on('error', e => { console.error('[SITE→BOT] Erro:', e.message); resolve(false); });
+      req.on('timeout', () => { req.destroy(); console.error('[SITE→BOT] Timeout'); resolve(false); });
+      req.write(data);
+      req.end();
+    } catch(e) {
+      console.error('[SITE→BOT] URL inválida:', e.message);
+      resolve(false);
+    }
+  });
+}
+
 // ─── PROCESSAR VIP COMPRADO ───────────────────────────────────────────────
 async function processarVipComprado(paymentId, metadata, vip) {
   const { nick, discord, vipId } = metadata;
@@ -222,9 +269,23 @@ async function processarVipComprado(paymentId, metadata, vip) {
   saveJSON(VIP_FILE,        vips);
   saveJSON(VIP_ORDERS_FILE, orders);
 
-  // Aplica via RCON
-  await aplicarVip(nick, vip);
-  console.log(`[SITE] ✅ VIP entregue: ${nick} → ${vip.name}`);
+  // Primeiro tenta interligar com o bot Discord, que já cuida de log/cargo/pendente.
+  const botOk = await notifyBot({
+    kind: 'vip',
+    paymentId,
+    vipId: vip.id || vipId,
+    nick,
+    discord,
+    price: vip.price || metadata.price || 0
+  });
+
+  if (!botOk) {
+    // Fallback: se o bot não responder, aplica via RCON direto pelo site.
+    await aplicarVip(nick, vip);
+    console.log(`[SITE] ✅ VIP entregue via fallback RCON: ${nick} → ${vip.name}`);
+  } else {
+    console.log(`[SITE] ✅ VIP enviado para o bot: ${nick} → ${vip.name}`);
+  }
 }
 
 // ─── EXPRESS ──────────────────────────────────────────────────────────────
@@ -378,9 +439,23 @@ app.get('/api/kits/pix/status/:id', async (req, res) => {
         orders[id] = order;
         saveJSON(KIT_ORDERS_FILE, orders);
 
-        entregarKit(order.nick, kit).catch(e =>
-          console.error('[SITE] Erro ao entregar kit:', e.message)
-        );
+        notifyBot({
+          kind: 'kit',
+          paymentId: id,
+          kitId: order.kitId,
+          nick: order.nick,
+          discord: order.discord || null,
+          price: order.price || kit.price || 0
+        }).then(botOk => {
+          if (!botOk) {
+            // Fallback: se o bot não responder, entrega via RCON direto pelo site.
+            entregarKit(order.nick, kit).catch(e =>
+              console.error('[SITE] Erro ao entregar kit:', e.message)
+            );
+          } else {
+            console.log('[SITE] ✅ Kit enviado para o bot: ' + order.nick + ' → ' + kit.name);
+          }
+        });
       }
     }
 
@@ -421,7 +496,15 @@ app.post('/webhook/mp', async (req, res) => {
         kitOrder.deliveredAt = Date.now();
         kitOrders[paymentId] = kitOrder;
         saveJSON(KIT_ORDERS_FILE, kitOrders);
-        await entregarKit(kitOrder.nick, kit);
+        const botOk = await notifyBot({
+          kind: 'kit',
+          paymentId,
+          kitId: kitOrder.kitId,
+          nick: kitOrder.nick,
+          discord: kitOrder.discord || null,
+          price: kitOrder.price || kit.price || 0
+        });
+        if (!botOk) await entregarKit(kitOrder.nick, kit);
       }
     }
   } catch(e) {
