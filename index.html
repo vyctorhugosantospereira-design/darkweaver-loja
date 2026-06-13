@@ -9,20 +9,20 @@
   <style>
     /* ── TOKENS ─────────────────────────────────────────────── */
     :root {
-      --bg:        #0a0c0a;
-      --bg2:       #0f130f;
-      --bg3:       #141a14;
-      --border:    #1e2d1e;
-      --green:     #3dff6e;
-      --green-dim: #1a6632;
-      --green-glow:#3dff6e44;
-      --purple:    #9b59b6;
-      --purple-dim:#2d1a3d;
+      --bg:        #07040b;
+      --bg2:       #0d0714;
+      --bg3:       #140b20;
+      --border:    #342044;
+      --green:     #b86cff;
+      --green-dim: #6d32a8;
+      --green-glow:#b86cff55;
+      --purple:    #d08cff;
+      --purple-dim:#23112f;
       --gold:      #f0c040;
       --gold-dim:  #3d2e00;
       --red:       #e74c3c;
-      --text:      #d4e8d4;
-      --text-dim:  #6a8a6a;
+      --text:      #eee4ff;
+      --text-dim:  #9d85b8;
       --pixel:     'Press Start 2P', monospace;
       --body:      'Inter', sans-serif;
     }
@@ -927,6 +927,87 @@
 
     .toast.show { transform: translateX(-50%) translateY(0); }
 
+
+    /* ── DARKWEAVER ROXO ─────────────────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 10%, rgba(184,108,255,0.18), transparent 38%),
+        radial-gradient(circle at 15% 80%, rgba(208,140,255,0.12), transparent 30%),
+        radial-gradient(circle at 85% 75%, rgba(109,50,168,0.18), transparent 34%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      text-decoration: none;
+    }
+
+    .site-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--purple);
+      box-shadow: 0 0 22px rgba(184,108,255,0.55);
+      background: #08040d;
+    }
+
+    .hero-logo {
+      width: 118px;
+      height: 118px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 1.5rem;
+      border: 2px solid var(--purple);
+      box-shadow: 0 0 35px rgba(184,108,255,0.55), 0 0 80px rgba(184,108,255,0.18);
+      animation: float-logo 3s ease-in-out infinite;
+    }
+
+    @keyframes float-logo {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .vip-card, .kit-card, .info-card, .modal {
+      box-shadow: 0 18px 50px rgba(0,0,0,0.36);
+    }
+
+    .vip-card:hover, .kit-card:hover, .info-card:hover {
+      box-shadow: 0 18px 50px rgba(184,108,255,0.18);
+    }
+
+    .btn-primary, .kit-btn, .pix-copy-btn {
+      background: linear-gradient(135deg, #b86cff, #7d3cff);
+      color: white;
+      box-shadow: 0 0 20px rgba(184,108,255,0.25);
+    }
+
+    .btn-primary:hover, .kit-btn:hover, .pix-copy-btn:hover {
+      box-shadow: 0 0 28px rgba(184,108,255,0.45);
+    }
+
+    .vip-btn-purple, .vip-btn-gold {
+      background: linear-gradient(135deg, #b86cff, #7d3cff);
+      color: #fff;
+    }
+
+    .nav-ip {
+      background: rgba(184,108,255,0.12);
+      border-color: var(--purple);
+    }
+
+    .hero-title span {
+      background: linear-gradient(90deg, #ffffff, #d9b3ff, #b86cff);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
     /* ── RESPONSIVE ───────────────────────────────────────────── */
     @media (max-width: 640px) {
       .nav-links { display: none; }
@@ -939,7 +1020,7 @@
 
 <!-- ── NAV ──────────────────────────────────────────────────────── -->
 <nav>
-  <a href="#" class="nav-logo">DARK<br>WEAVER</a>
+  <a href="#" class="nav-brand"><img src="assets/darkweaver-logo.png" class="site-logo" alt="DarkWeaver"><span class="nav-logo">DARK<br>WEAVER</span></a>
   <ul class="nav-links">
     <li><a href="#inicio">Início</a></li>
     <li><a href="#sobre">Servidor</a></li>
@@ -952,16 +1033,17 @@
 
 <!-- ── HERO ─────────────────────────────────────────────────────── -->
 <div id="inicio" class="hero">
-  <div class="hero-badge">🟢 SERVIDOR ONLINE · SEMI-ANARQUIA</div>
+  <img src="assets/darkweaver-logo.png" class="hero-logo" alt="DarkWeaver Logo">
+  <div class="hero-badge">🟣 SERVIDOR ONLINE · DARKWEAVER</div>
   <h1 class="hero-title">
-    ENTRE NO<br><span>DARKWEAVER</span>
+    BEM-VINDO AO<br><span>DARKWEAVER</span>
   </h1>
   <p class="hero-sub">
     Servidor de Minecraft Semi-Anarquia brasileiro. PvP, fações, liberdade total —
-    com VIPs que deixam sua experiência ainda mais insana.
+    com VIPs, kits e vantagens para dominar sua jornada.
   </p>
   <div class="hero-actions">
-    <a href="#loja" class="btn-primary">VER VIPS</a>
+    <a href="#loja" class="btn-primary">VER LOJA</a>
     <button class="btn-secondary" onclick="copyIP()">COPIAR IP</button>
   </div>
 </div>
