@@ -1009,53 +1009,135 @@
     }
 
 
-    /* ── IP JAVA / BEDROCK ───────────────────────────────────── */
-    .server-access {
+    /* ── BANNER PRINCIPAL DARKWEAVER ─────────────────────────── */
+    .main-banner-section {
       position: relative;
       z-index: 1;
-      max-width: 900px;
-      margin: -4rem auto 3rem;
+      max-width: 1250px;
+      margin: -3rem auto 4rem;
       padding: 0 2rem;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1rem;
     }
 
-    .access-card {
-      background: rgba(13,7,20,0.88);
+    .main-banner-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
       border: 1px solid var(--purple);
-      border-radius: 8px;
-      padding: 1.2rem;
-      box-shadow: 0 0 30px rgba(184,108,255,0.18);
+      box-shadow: 0 0 45px rgba(184,108,255,0.28);
+      background: var(--bg2);
     }
 
-    .access-card h3 {
+    .main-banner-img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .banner-actions {
+      position: absolute;
+      left: 50%;
+      bottom: 6%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 1rem;
+      width: min(760px, 88%);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .banner-btn {
       font-family: var(--pixel);
       font-size: 0.55rem;
-      color: var(--green);
-      margin-bottom: 0.8rem;
-      letter-spacing: 0.08em;
-    }
-
-    .access-line {
-      font-family: var(--pixel);
-      font-size: 0.45rem;
+      text-decoration: none;
       color: #fff;
-      line-height: 1.8;
-      word-break: break-all;
+      background: rgba(20, 8, 35, 0.88);
+      border: 1px solid var(--purple);
+      padding: 1rem 1.5rem;
+      border-radius: 6px;
+      box-shadow: 0 0 22px rgba(184,108,255,0.35);
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+      text-align: center;
+      min-width: 230px;
     }
 
-    .access-copy {
-      margin-top: 0.9rem;
-      width: 100%;
-      font-family: var(--pixel);
-      font-size: 0.42rem;
-      border: 1px solid var(--green-dim);
+    .banner-btn:hover {
+      transform: translateY(-3px);
       background: linear-gradient(135deg, #b86cff, #7d3cff);
+      box-shadow: 0 0 30px rgba(184,108,255,0.55);
+    }
+
+    .discord-support {
+      position: relative;
+      z-index: 1;
+      max-width: 980px;
+      margin: 0 auto 4rem;
+      padding: 0 2rem;
+    }
+
+    .discord-card {
+      background: rgba(13,7,20,0.92);
+      border: 1px solid var(--purple);
+      border-radius: 10px;
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      box-shadow: 0 0 35px rgba(184,108,255,0.20);
+    }
+
+    .discord-card h3 {
+      font-family: var(--pixel);
+      font-size: 0.65rem;
+      color: var(--green);
+      margin-bottom: 0.6rem;
+      line-height: 1.6;
+    }
+
+    .discord-card p {
+      color: var(--text-dim);
+      line-height: 1.6;
+      font-size: 0.92rem;
+    }
+
+    .discord-btn {
+      font-family: var(--pixel);
+      font-size: 0.5rem;
+      text-decoration: none;
       color: #fff;
-      padding: 0.75rem;
-      border-radius: 4px;
-      cursor: pointer;
+      background: linear-gradient(135deg, #5865F2, #9b59ff);
+      padding: 1rem 1.3rem;
+      border-radius: 6px;
+      white-space: nowrap;
+      box-shadow: 0 0 22px rgba(88,101,242,0.35);
+    }
+
+    .discord-btn:hover {
+      filter: brightness(1.12);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 720px) {
+      .banner-actions {
+        position: static;
+        transform: none;
+        width: 100%;
+        padding: 1rem;
+        background: rgba(0,0,0,0.35);
+      }
+
+      .banner-btn {
+        min-width: 100%;
+        font-size: 0.45rem;
+      }
+
+      .discord-card {
+        grid-template-columns: 1fr;
+      }
+
+      .discord-btn {
+        text-align: center;
+      }
     }
 
     /* ── RESPONSIVE ───────────────────────────────────────────── */
@@ -1169,8 +1251,9 @@
     <li><a href="#loja">Loja VIP</a></li>
     <li><a href="#kits">Kits</a></li>
     <li><a href="#como-funciona">Como Funciona</a></li>
+    <li><a href="https://discord.gg/YhNgQnMvFN" target="_blank" rel="noopener">Discord</a></li>
   </ul>
-  <button class="nav-ip" onclick="copyIP()">JAVA: zoe.lura.pro:35580</button>
+  <button class="nav-ip" onclick="copyIP()">zoe.lura.pro:35580</button>
 </nav>
 
 <!-- ── HERO ─────────────────────────────────────────────────────── -->
@@ -1186,23 +1269,19 @@
   </p>
   <div class="hero-actions">
     <a href="#loja" class="btn-primary">VER LOJA</a>
+    <a class="btn-secondary" href="https://discord.gg/YhNgQnMvFN" target="_blank" rel="noopener">DISCORD</a>
     <button class="btn-secondary" onclick="copyIP()">COPIAR IP</button>
   </div>
 </div>
 
-<!-- ── ACESSO JAVA / BEDROCK ────────────────────────────────────── -->
-<div class="server-access">
-  <div class="access-card">
-    <h3>🎮 JAVA</h3>
-    <div class="access-line">IP: zoe.lura.pro:35580</div>
-    <button class="access-copy" onclick="copyText('zoe.lura.pro:35580', '✅ IP JAVA COPIADO!')">COPIAR IP JAVA</button>
-  </div>
-
-  <div class="access-card">
-    <h3>📱 BEDROCK</h3>
-    <div class="access-line">IP: zoe.lura.pro</div>
-    <div class="access-line">PORTA: 35580</div>
-    <button class="access-copy" onclick="copyText('zoe.lura.pro', '✅ IP BEDROCK COPIADO!')">COPIAR IP BEDROCK</button>
+<!-- ── BANNER PRINCIPAL ─────────────────────────────────────────── -->
+<div class="main-banner-section">
+  <div class="main-banner-card">
+    <img src="assets/darkweaver-banner.png" class="main-banner-img" alt="Banner DarkWeaver com IP Java, Bedrock e Discord">
+    <div class="banner-actions">
+      <a class="banner-btn" href="https://discord.gg/YhNgQnMvFN" target="_blank" rel="noopener">💬 ENTRAR NO DISCORD</a>
+      <a class="banner-btn" href="#loja">🛒 VER LOJA</a>
+    </div>
   </div>
 </div>
 
@@ -1213,8 +1292,8 @@
     <span class="stat-label">Jogadores Online</span>
   </div>
   <div class="stat">
-    <span class="stat-value">JAVA + BEDROCK</span>
-    <span class="stat-label">Compatível</span>
+    <span class="stat-value">1.21</span>
+    <span class="stat-label">Versão Minecraft</span>
   </div>
   <div class="stat">
     <span class="stat-value">24/7</span>
@@ -1283,6 +1362,17 @@
   </div>
 </section>
 
+<!-- ── DISCORD / SUPORTE ─────────────────────────────────────────── -->
+<div class="discord-support">
+  <div class="discord-card">
+    <div>
+      <h3>💬 SUPORTE DARKWEAVER</h3>
+      <p>Entre no Discord para tirar dúvidas, receber suporte sobre compras, acompanhar novidades, eventos, avisos e atualizações do servidor.</p>
+    </div>
+    <a class="discord-btn" href="https://discord.gg/YhNgQnMvFN" target="_blank" rel="noopener">ENTRAR NO DISCORD</a>
+  </div>
+</div>
+
 <!-- ── COMO FUNCIONA ─────────────────────────────────────────────── -->
 <section id="como-funciona">
   <div class="section-label">// COMO FUNCIONA</div>
@@ -1310,7 +1400,7 @@
 
 <!-- ── FOOTER ────────────────────────────────────────────────────── -->
 <footer>
-  <p><span>DARKWEAVER</span> &nbsp;·&nbsp; JAVA: zoe.lura.pro:35580 &nbsp;·&nbsp; BEDROCK: zoe.lura.pro PORTA 35580</p>
+  <p><span>DARKWEAVER</span> &nbsp;·&nbsp; zoe.lura.pro:35580 &nbsp;·&nbsp; Pagamentos processados com segurança via Mercado Pago</p>
   <p style="margin-top:0.5rem; font-size:0.72rem;">© 2026 DarkWeaver. Não somos afiliados à Mojang Studios.</p>
 </footer>
 
@@ -1435,15 +1525,11 @@ function showToast(msg, duration = 2500) {
   setTimeout(() => t.classList.remove('show'), duration);
 }
 
-function copyText(text, msg) {
-  navigator.clipboard.writeText(text)
-    .then(() => showToast(msg || '✅ COPIADO!'))
-    .catch(() => showToast(text));
-}
-
 // ─── COPY IP ─────────────────────────────────────────────────────
 function copyIP() {
-  copyText('zoe.lura.pro:35580', '✅ IP JAVA COPIADO!');
+  navigator.clipboard.writeText('zoe.lura.pro:35580')
+    .then(() => showToast('✅ IP COPIADO!'))
+    .catch(() => showToast('IP: zoe.lura.pro:35580'));
 }
 
 // ─── HELPERS ─────────────────────────────────────────────────────
