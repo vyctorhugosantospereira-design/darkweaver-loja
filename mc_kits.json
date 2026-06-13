@@ -1,56 +1,103 @@
-[
-  {
-    "id": "ferro",
-    "name": "Kit Ferro",
-    "price": 3.67,
-    "commands": ["kit give Ferro {player}"]
-  },
-  {
-    "id": "ferro_encantado",
-    "name": "Kit Ferro Encantado",
-    "price": 8.99,
-    "commands": ["kit give Ferro_encantado {player}"]
-  },
-  {
-    "id": "diamante",
-    "name": "Kit Rei do Diamante",
-    "price": 16.99,
-    "commands": ["kit give Diamante {player}"]
-  },
-  {
-    "id": "diamante_encantado",
-    "name": "Kit Diamante Encantado",
-    "price": 22.99,
-    "commands": ["kit give Diamante_encantado {player}"]
-  },
-  {
-    "id": "diamante_pvp",
-    "name": "Kit Diamante PvP",
-    "price": 56.99,
-    "commands": ["kit give Diamante_PvP {player}"]
-  },
-  {
-    "id": "netherita",
-    "name": "Kit Netherita",
-    "price": 29.99,
-    "commands": ["kit give Netherita {player}"]
-  },
-  {
-    "id": "netherita_encantado",
-    "name": "Kit Netherita Encantado",
-    "price": 35.99,
-    "commands": ["kit give Netherita_encantado {player}"]
-  },
-  {
-    "id": "netherita_pvp",
-    "name": "Kit Netherita PvP",
-    "price": 86.99,
-    "commands": ["kit give Netherita_PvP {player}"]
-  },
-  {
-    "id": "imortal",
-    "name": "Kit Imortal",
-    "price": 19.99,
-    "commands": ["kit give Imortal {player}"]
-  }
-]
+{
+  "1450549848188129433": [
+    {
+      "id": "ferro",
+      "name": "Kit Ferro",
+      "emoji": "⚔️",
+      "price": 3.67,
+      "description": "Um kit simples e eficiente para começar sua jornada, contendo armadura de ferro, armas, ferramentas e itens básicos para sobrevivência e combate.",
+      "stock": 0,
+      "commands": [
+        "kit give Ferro {player}"
+      ]
+    },
+    {
+      "id": "ferro_encantado",
+      "name": "Kit Ferro Encantado",
+      "emoji": "⚡",
+      "price": 8.99,
+      "description": "Um kit equilibrado para combate e sobrevivência, trazendo armadura encantada, espada reforçada e ferramentas essenciais.",
+      "stock": 0,
+      "commands": [
+        "kit give Ferro_encantado {player}"
+      ]
+    },
+    {
+      "id": "diamante",
+      "name": "Kit Rei do Diamante",
+      "emoji": "💎",
+      "price": 16.99,
+      "description": "Equipamento completo de diamante para dominar o servidor, com armadura, espada, picareta, maçã dourada e comida para começar com vantagem.",
+      "stock": 0,
+      "commands": [
+        "kit give Diamante {player}"
+      ]
+    },
+    {
+      "id": "diamante_encantado",
+      "name": "Kit Diamante Encantado",
+      "emoji": "💎",
+      "price": 22.99,
+      "description": "Versão aprimorada do Kit Diamante, com armadura e ferramentas de diamante encantadas.",
+      "stock": 0,
+      "commands": [
+        "kit give Diamante_encantado {player}"
+      ]
+    },
+    {
+      "id": "diamante_pvp",
+      "name": "Kit Diamante PvP",
+      "emoji": "💎",
+      "price": 56.99,
+      "description": "Kit definitivo para combate, equipado com armadura e armas de diamante encantadas no nível máximo.",
+      "stock": 0,
+      "commands": [
+        "kit give Diamante_PvP {player}"
+      ]
+    },
+    {
+      "id": "netherita",
+      "name": "Kit Netherita",
+      "emoji": "🖤",
+      "price": 29.99,
+      "description": "Kit Netherita com equipamentos de elite, maior resistência e poder para enfrentar os desafios mais difíceis.",
+      "stock": 0,
+      "commands": [
+        "kit give Netherita {player}"
+      ]
+    },
+    {
+      "id": "netherita_encantado",
+      "name": "Kit Netherita Encantado",
+      "emoji": "🖤",
+      "price": 35.99,
+      "description": "Kit Netherita Encantado com armadura de netherita e ferramentas encantadas para se tornar uma lenda.",
+      "stock": 0,
+      "commands": [
+        "kit give Netherita_encantado {player}"
+      ]
+    },
+    {
+      "id": "netherita_pvp",
+      "name": "Kit Netherita PvP",
+      "emoji": "🖤",
+      "price": 86.99,
+      "description": "Kit definitivo para combate, com armadura e armas de Netherita encantadas no nível máximo vanilla.",
+      "stock": 0,
+      "commands": [
+        "kit give Netherita_PvP {player}"
+      ]
+    },
+    {
+      "id": "imortal",
+      "name": "Kit Imortal",
+      "emoji": "💀",
+      "price": 19.99,
+      "description": "Kit Imortal com totem da imortalidade, maçã dourada e poções para sobreviver a qualquer combate.",
+      "stock": 0,
+      "commands": [
+        "kit give Imortal {player}"
+      ]
+    }
+  ]
+}
