@@ -175,10 +175,151 @@ async function rconExec(cmd) {
 }
 
 async function aplicarVip(nick, vip) {
-  // LuckPerms
   await rconExec(`lp user ${nick} parent add ${vip.lpGroup}`);
-  await rconExec(`lp user ${nick} parent addtemp ${vip.lpGroup} ${vip.dias || 30}d`);
-  console.log(`[VIP] Aplicado: ${nick} → ${vip.lpGroup}`);
+  console.log(`[VIP] ✅ Aplicado: ${nick} → ${vip.lpGroup}`);
+}
+
+async function removerVip(nick, vip) {
+  await rconExec(`lp user ${nick} parent remove ${vip.lpGroup}`);
+  console.log(`[VIP] ⏳ Removido após expirar: ${nick} → ${vip.lpGroup}`);
+}
+
+function addPendingVip(order, vip) {
+  const pending = loadJSON(VIP_PENDING_FILE, {});
+  const key = String(order.nick).toLowerCase();
+  if (!pending[key]) pending[key] = [];
+  const exists = pending[key].some(x => String(x.paymentId) === String(order.paymentId));
+  if (!exists) {
+    pending[key].push({
+      paymentId: String(order.paymentId),
+      vipId: order.vipId || vip.id,
+      vipName: vip.name,
+      nick: order.nick,
+      discord: order.discord || null,
+      price: order.price || vip.price || 0,
+      lpGroup: vip.lpGroup,
+      dias: vip.dias || 30,
+      createdAt: Date.now(),
+      status: 'pending_offline'
+    });
+    saveJSON(VIP_PENDING_FILE, pending);
+  }
+}
+
+async function deliverVipWhenOnline(order, vip) {
+  const online = await isPlayerOnline(order.nick);
+  if (!online) {
+    addPendingVip(order, vip);
+    console.log(`[VIP] ⏳ ${order.nick} offline — VIP salvo como pendente: ${vip.name}`);
+    return { delivered: false, pending: true, reason: 'player_offline' };
+  }
+
+  await aplicarVip(order.nick, vip);
+  return { delivered: true, pending: false };
+}
+
+async function processPendingVips() {
+  const pending = loadJSON(VIP_PENDING_FILE, {});
+  const shop = loadJSON(VIP_SHOP_FILE, []);
+  let changed = false;
+
+  for (const [key, list] of Object.entries(pending)) {
+    const remaining = [];
+    for (const item of list) {
+      const online = await isPlayerOnline(item.nick);
+      if (!online) {
+        remaining.push(item);
+        continue;
+      }
+
+      const vip = shop.find(v => v.id === item.vipId) || {
+        id: item.vipId,
+        name: item.vipName,
+        lpGroup: item.lpGroup,
+        dias: item.dias || 30,
+        price: item.price || 0
+      };
+
+      try {
+        await aplicarVip(item.nick, vip);
+
+        const expiresAt = Date.now() + (vip.dias || 30) * 24 * 60 * 60 * 1000;
+        const vips = loadJSON(VIP_FILE, {});
+        const orders = loadJSON(VIP_ORDERS_FILE, {});
+
+        vips[item.paymentId] = {
+          paymentId: item.paymentId,
+          nick: item.nick,
+          discord: item.discord || null,
+          vipId: vip.id,
+          vipName: vip.name,
+          lpGroup: vip.lpGroup,
+          dias: vip.dias || 30,
+          expiresAt,
+          createdAt: item.createdAt || Date.now(),
+          activatedAt: Date.now(),
+          source: 'site'
+        };
+
+        if (orders[item.paymentId]) {
+          orders[item.paymentId].delivered = true;
+          orders[item.paymentId].deliveredAt = Date.now();
+          orders[item.paymentId].deliveryStatus = 'delivered_after_login';
+          orders[item.paymentId].expiresAt = expiresAt;
+        }
+
+        saveJSON(VIP_FILE, vips);
+        saveJSON(VIP_ORDERS_FILE, orders);
+
+        changed = true;
+        console.log(`[VIP] ✅ Pendente entregue automaticamente: ${item.nick} → ${vip.name}`);
+      } catch(e) {
+        console.error('[VIP] Erro ao entregar pendente:', e.message);
+        remaining.push(item);
+      }
+    }
+
+    if (remaining.length) pending[key] = remaining;
+    else delete pending[key];
+  }
+
+  if (changed) saveJSON(VIP_PENDING_FILE, pending);
+}
+
+async function processExpiredVips() {
+  const vips = loadJSON(VIP_FILE, {});
+  const shop = loadJSON(VIP_SHOP_FILE, []);
+  let changed = false;
+
+  for (const [paymentId, entry] of Object.entries(vips)) {
+    if (entry.removed) continue;
+    if (!entry.expiresAt || Date.now() < entry.expiresAt) continue;
+
+    const vip = shop.find(v => v.id === entry.vipId) || {
+      id: entry.vipId,
+      name: entry.vipName,
+      lpGroup: entry.lpGroup
+    };
+
+    try {
+      await removerVip(entry.nick, vip);
+      entry.removed = true;
+      entry.removedAt = Date.now();
+      vips[paymentId] = entry;
+      changed = true;
+
+      const orders = loadJSON(VIP_ORDERS_FILE, {});
+      if (orders[paymentId]) {
+        orders[paymentId].removed = true;
+        orders[paymentId].removedAt = Date.now();
+        saveJSON(VIP_ORDERS_FILE, orders);
+      }
+    } catch(e) {
+      console.error('[VIP] Erro ao remover VIP expirado:', e.message);
+    }
+  }
+
+  if (changed) saveJSON(VIP_FILE, vips);
 }
 
 // ─── KITS ────────────────────────────────────────────────────────────────
@@ -336,40 +477,54 @@ function notifyBot(payload) {
 // ─── PROCESSAR VIP COMPRADO ───────────────────────────────────────────────
 async function processarVipComprado(paymentId, metadata, vip) {
   const { nick, discord, vipId } = metadata;
-  const vips   = loadJSON(VIP_FILE,   {});
   const orders = loadJSON(VIP_ORDERS_FILE, {});
+  const order = orders[paymentId] || metadata;
 
-  if (orders[paymentId]?.delivered) return; // já processado
+  if (order?.delivered) {
+    return { delivered: true, pending: false, already: true };
+  }
 
-  // Salva ordem
-  const expiresAt = Date.now() + (vip.dias || 30) * 24 * 60 * 60 * 1000;
-  const vipEntry  = {
-    paymentId, nick, discord, vipId, vipName: vip.name,
-    lpGroup: vip.lpGroup, dias: vip.dias || 30,
-    expiresAt, createdAt: Date.now(), source: 'site',
-  };
-  vips[paymentId] = vipEntry;
-  orders[paymentId] = { ...vipEntry, delivered: true, deliveredAt: Date.now() };
-  saveJSON(VIP_FILE,        vips);
+  order.paymentId = paymentId;
+  order.vipId = vip.id || vipId || order.vipId;
+  order.nick = nick || order.nick;
+  order.discord = discord || order.discord || null;
+  order.price = vip.price || order.price || 0;
+  order.status = 'approved';
+
+  const delivery = await deliverVipWhenOnline(order, vip);
+
+  if (delivery.delivered) {
+    const expiresAt = Date.now() + (vip.dias || 30) * 24 * 60 * 60 * 1000;
+
+    const vips = loadJSON(VIP_FILE, {});
+    vips[paymentId] = {
+      paymentId,
+      nick: order.nick,
+      discord: order.discord || null,
+      vipId: vip.id || order.vipId,
+      vipName: vip.name,
+      lpGroup: vip.lpGroup,
+      dias: vip.dias || 30,
+      expiresAt,
+      createdAt: order.createdAt || Date.now(),
+      activatedAt: Date.now(),
+      source: 'site'
+    };
+    saveJSON(VIP_FILE, vips);
+
+    order.delivered = true;
+    order.deliveredAt = Date.now();
+    order.deliveryStatus = 'delivered_online';
+    order.expiresAt = expiresAt;
+  } else {
+    order.delivered = false;
+    order.deliveryStatus = 'pending_player_offline';
+  }
+
+  orders[paymentId] = order;
   saveJSON(VIP_ORDERS_FILE, orders);
 
-  // Primeiro tenta interligar com o bot Discord, que já cuida de log/cargo/pendente.
-  const botOk = await notifyBot({
-    kind: 'vip',
-    paymentId,
-    vipId: vip.id || vipId,
-    nick,
-    discord,
-    price: vip.price || metadata.price || 0
-  });
-
-  if (!botOk) {
-    // Fallback: se o bot não responder, aplica via RCON direto pelo site.
-    await aplicarVip(nick, vip);
-    console.log(`[SITE] ✅ VIP entregue via fallback RCON: ${nick} → ${vip.name}`);
-  } else {
-    console.log(`[SITE] ✅ VIP enviado para o bot: ${nick} → ${vip.name}`);
-  }
+  return delivery;
 }
 
 // ─── EXPRESS ──────────────────────────────────────────────────────────────
@@ -425,26 +580,22 @@ app.get('/api/pix/status/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const data = await consultarStatus(id);
+    const orders = loadJSON(VIP_ORDERS_FILE, {});
+    const order  = orders[id];
+    let delivery = null;
 
-    if (data.status === 'approved') {
-      // Verifica se já foi processado
-      const orders = loadJSON(VIP_ORDERS_FILE, {});
-      const order  = orders[id];
-      if (order && !order.delivered) {
-        const shop = loadJSON(VIP_SHOP_FILE, []);
-        const vip  = shop.find(v => v.id === order.vipId);
-        if (vip) {
-          order.delivered = true;
-          orders[id] = order;
-          saveJSON(VIP_ORDERS_FILE, orders);
-          processarVipComprado(id, order, vip).catch(e =>
-            console.error('[SITE] Erro ao aplicar VIP:', e.message)
-          );
-        }
+    if (data.status === 'approved' && order && !order.delivered) {
+      const shop = loadJSON(VIP_SHOP_FILE, []);
+      const vip  = shop.find(v => v.id === order.vipId);
+      if (vip) {
+        delivery = await processarVipComprado(id, order, vip);
       }
     }
 
-    res.json(data);
+    await processPendingVips().catch(e => console.error('[VIP] Erro ao processar pendentes:', e.message));
+    await processExpiredVips().catch(e => console.error('[VIP] Erro ao remover expirados:', e.message));
+
+    res.json({ ...data, delivery });
   } catch(e) {
     res.status(500).json({ error: e.message });
   }
@@ -597,7 +748,15 @@ app.post('/api/kits/process-pending', async (req, res) => {
 
 // ─── START ────────────────────────────────────────────────────────────────
 if (require.main === module) {
-  app.listen(CONFIG.PORT, () => {
+  
+// ─── PROCESSADORES AUTOMÁTICOS ────────────────────────────────────────────
+setInterval(() => {
+  processPendingKits().catch(e => console.error('[KIT] Erro ao processar pendentes:', e.message));
+  processPendingVips().catch(e => console.error('[VIP] Erro ao processar pendentes:', e.message));
+  processExpiredVips().catch(e => console.error('[VIP] Erro ao remover expirados:', e.message));
+}, 30000);
+
+app.listen(CONFIG.PORT, () => {
   console.log('');
   console.log('  ██████╗  █████╗ ██████╗ ██╗  ██╗██╗    ██╗███████╗ █████╗ ██╗   ██╗███████╗██████╗');
   console.log('  ██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝██║    ██║██╔════╝██╔══██╗██║   ██║██╔════╝██╔══██╗');
