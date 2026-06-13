@@ -1,253 +1,56 @@
 [
   {
-    "id": "kit_ferro",
+    "id": "ferro",
     "name": "Kit Ferro",
-    "emoji": "⚔️",
-    "tier": "ferro",
     "price": 3.67,
-    "description": "Um kit simples e eficiente para começar sua jornada, contendo armadura de ferro, armas, ferramentas e itens básicos para sobrevivência e combate.",
-    "itens": [
-      "Espada de Ferro",
-      "Picareta de Ferro",
-      "Bife Cozido",
-      "Ensopado de Cogumelos",
-      "Armadura de Ferro"
-    ],
-    "commands": [
-      "give {player} minecraft:iron_helmet 1",
-      "give {player} minecraft:iron_chestplate 1",
-      "give {player} minecraft:iron_leggings 1",
-      "give {player} minecraft:iron_boots 1",
-      "give {player} minecraft:iron_sword 1",
-      "give {player} minecraft:iron_pickaxe 1",
-      "give {player} minecraft:cooked_beef 10",
-      "give {player} minecraft:mushroom_stew 3"
-    ],
-    "stock": 0,
-    "image": "/assets/kits/kit_ferro.png"
+    "commands": ["kit give Ferro {player}"]
   },
   {
-    "id": "kit_ferro_enc",
+    "id": "ferro_encantado",
     "name": "Kit Ferro Encantado",
-    "emoji": "⚡",
-    "tier": "ferro",
     "price": 8.99,
-    "description": "Kit equilibrado para combate e sobrevivência com armadura encantada, espada reforçada e ferramentas essenciais para enfrentar qualquer batalha.",
-    "itens": [
-      "Espada de Ferro Afiada II",
-      "Picareta de Ferro Ef. II",
-      "20x Bife Cozido",
-      "Sopa Suspeita",
-      "Armadura Ferro Enc."
-    ],
-    "commands": [
-      "give {player} minecraft:iron_helmet[minecraft:enchantments={levels:{\"minecraft:protection\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:iron_chestplate[minecraft:enchantments={levels:{\"minecraft:protection\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:iron_leggings[minecraft:enchantments={levels:{\"minecraft:protection\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:iron_boots[minecraft:enchantments={levels:{\"minecraft:protection\":2,\"minecraft:unbreaking\":2,\"minecraft:thorns\":2}}] 1",
-      "give {player} minecraft:iron_sword[minecraft:enchantments={levels:{\"minecraft:sharpness\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:iron_pickaxe[minecraft:enchantments={levels:{\"minecraft:efficiency\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:cooked_beef 20",
-      "give {player} minecraft:suspicious_stew 1"
-    ],
-    "stock": 0,
-    "image": "/assets/kits/kit_ferro_enc.png"
+    "commands": ["kit give Ferro_encantado {player}"]
   },
   {
-    "id": "kit_rei_diamante",
+    "id": "diamante",
     "name": "Kit Rei do Diamante",
-    "emoji": "💎",
-    "tier": "diamante",
     "price": 16.99,
-    "description": "Equipamento completo de diamante para dominar o servidor! Armadura, espada, picareta, maçã dourada e comida para começar com vantagem.",
-    "itens": [
-      "Espada de Diamante",
-      "Picareta de Diamante",
-      "2x Maçã Dourada",
-      "25x Carne Cozida",
-      "Armadura de Diamante"
-    ],
-    "commands": [
-      "give {player} minecraft:diamond_helmet 1",
-      "give {player} minecraft:diamond_chestplate 1",
-      "give {player} minecraft:diamond_leggings 1",
-      "give {player} minecraft:diamond_boots 1",
-      "give {player} minecraft:diamond_sword 1",
-      "give {player} minecraft:diamond_pickaxe 1",
-      "give {player} minecraft:golden_apple 2",
-      "give {player} minecraft:cooked_beef 25"
-    ],
-    "stock": 0,
-    "image": "/assets/kits/kit_rei_diamante.png"
+    "commands": ["kit give Diamante {player}"]
   },
   {
-    "id": "kit_diamante_enc",
+    "id": "diamante_encantado",
     "name": "Kit Diamante Encantado",
-    "emoji": "💠",
-    "tier": "diamante",
     "price": 22.99,
-    "description": "Versão aprimorada do Kit Diamante! Armadura e ferramentas com Inquebrávelv II e Proteção II em todas as peças para maior resistência.",
-    "itens": [
-      "Espada Diamante Inq. II",
-      "Picareta Diamante Inq. II",
-      "2x Maçã Dourada",
-      "25x Carne Cozida",
-      "Armadura Diamante Prot. II"
-    ],
-    "commands": [
-      "give {player} minecraft:diamond_helmet[minecraft:enchantments={levels:{\"minecraft:protection\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:diamond_chestplate[minecraft:enchantments={levels:{\"minecraft:protection\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:diamond_leggings[minecraft:enchantments={levels:{\"minecraft:protection\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:diamond_boots[minecraft:enchantments={levels:{\"minecraft:protection\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:diamond_sword[minecraft:enchantments={levels:{\"minecraft:sharpness\":3,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:diamond_pickaxe[minecraft:enchantments={levels:{\"minecraft:efficiency\":3,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:golden_apple 2",
-      "give {player} minecraft:cooked_beef 25"
-    ],
-    "stock": 0,
-    "image": "/assets/kits/kit_diamante_enc.png"
+    "commands": ["kit give Diamante_encantado {player}"]
   },
   {
-    "id": "kit_imortal",
-    "name": "Kit Imortal",
-    "emoji": "💀",
-    "tier": "especial",
-    "price": 19.99,
-    "description": "Totem da imortalidade, maçã dourada e poções para sobreviver a qualquer combate. Seja impossível de matar!",
-    "itens": [
-      "2x Maçã Dourada Enc.",
-      "4x Maçã Dourada",
-      "4x Totem da Imortalidade",
-      "3x Poção de Cura II"
-    ],
-    "commands": [
-      "give {player} minecraft:enchanted_golden_apple 2",
-      "give {player} minecraft:golden_apple 4",
-      "give {player} minecraft:totem_of_undying 4",
-      "give {player} minecraft:potion[minecraft:potion_contents={potion:\"minecraft:strong_healing\"}] 3"
-    ],
-    "stock": 0,
-    "image": "/assets/kits/kit_imortal.png"
-  },
-  {
-    "id": "kit_diamante_pvp",
-    "name": "Kit Diamante PVP",
-    "emoji": "🗡️",
-    "tier": "diamante",
+    "id": "diamante_pvp",
+    "name": "Kit Diamante PvP",
     "price": 56.99,
-    "description": "O kit definitivo para combate! Armadura e armas de diamante encantadas no nível máximo vanilla, com itens essenciais para dominar qualquer batalha.",
-    "itens": [
-      "Espada Diamante Af. V",
-      "Machado Diamante Af. V",
-      "Arco Inq. III",
-      "Escudo Inq. III",
-      "5x Pérola do Fim",
-      "1x Totem",
-      "Maça Pesada",
-      "16x Flechas"
-    ],
-    "commands": [
-      "give {player} minecraft:diamond_helmet[minecraft:enchantments={levels:{\"minecraft:protection\":4,\"minecraft:unbreaking\":3,\"minecraft:respiration\":3}}] 1",
-      "give {player} minecraft:diamond_chestplate[minecraft:enchantments={levels:{\"minecraft:protection\":4,\"minecraft:unbreaking\":3}}] 1",
-      "give {player} minecraft:diamond_leggings[minecraft:enchantments={levels:{\"minecraft:protection\":4,\"minecraft:unbreaking\":3}}] 1",
-      "give {player} minecraft:diamond_boots[minecraft:enchantments={levels:{\"minecraft:protection\":4,\"minecraft:unbreaking\":3,\"minecraft:feather_falling\":4}}] 1",
-      "give {player} minecraft:diamond_sword[minecraft:enchantments={levels:{\"minecraft:sharpness\":5,\"minecraft:unbreaking\":3,\"minecraft:looting\":3}}] 1",
-      "give {player} minecraft:diamond_axe[minecraft:enchantments={levels:{\"minecraft:sharpness\":5,\"minecraft:unbreaking\":3,\"minecraft:efficiency\":5}}] 1",
-      "give {player} minecraft:bow[minecraft:enchantments={levels:{\"minecraft:power\":5,\"minecraft:unbreaking\":3,\"minecraft:infinity\":1}}] 1",
-      "give {player} minecraft:shield[minecraft:enchantments={levels:{\"minecraft:unbreaking\":3}}] 1",
-      "give {player} minecraft:ender_pearl 5",
-      "give {player} minecraft:totem_of_undying 1",
-      "give {player} minecraft:mace 1",
-      "give {player} minecraft:arrow 16"
-    ],
-    "stock": 0,
-    "image": "/assets/kits/kit_diamante_pvp.png"
+    "commands": ["kit give Diamante_PvP {player}"]
   },
   {
-    "id": "kit_netherite",
-    "name": "Kit Netherite",
-    "emoji": "🖤",
-    "tier": "netherite",
+    "id": "netherita",
+    "name": "Kit Netherita",
     "price": 29.99,
-    "description": "Supere os limites do diamante! O Kit Netherita oferece equipamentos de elite com maior resistência e poder para os desafios mais difíceis do servidor.",
-    "itens": [
-      "Espada de Netherita",
-      "Picareta de Netherita",
-      "1x Maçã Dourada",
-      "30x Carne Cozida"
-    ],
-    "commands": [
-      "give {player} minecraft:netherite_helmet 1",
-      "give {player} minecraft:netherite_chestplate 1",
-      "give {player} minecraft:netherite_leggings 1",
-      "give {player} minecraft:netherite_boots 1",
-      "give {player} minecraft:netherite_sword 1",
-      "give {player} minecraft:netherite_pickaxe 1",
-      "give {player} minecraft:golden_apple 1",
-      "give {player} minecraft:cooked_beef 30"
-    ],
-    "stock": 0,
-    "image": "/assets/kits/kit_netherite.png"
+    "commands": ["kit give Netherita {player}"]
   },
   {
-    "id": "kit_netherite_enc",
-    "name": "Kit Netherite Encantado",
-    "emoji": "✨",
-    "tier": "netherite",
+    "id": "netherita_encantado",
+    "name": "Kit Netherita Encantado",
     "price": 35.99,
-    "description": "A evolução definitiva! Armadura de Netherita com Proteção II, ferramentas com Inquebrávelv II e todos os recursos para se tornar uma lenda.",
-    "itens": [
-      "Espada Netherita Inq. II",
-      "Picareta Netherita Inq. II",
-      "1x Maçã Dourada",
-      "30x Carne Cozida",
-      "Armadura Netherita Prot. II"
-    ],
-    "commands": [
-      "give {player} minecraft:netherite_helmet[minecraft:enchantments={levels:{\"minecraft:protection\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:netherite_chestplate[minecraft:enchantments={levels:{\"minecraft:protection\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:netherite_leggings[minecraft:enchantments={levels:{\"minecraft:protection\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:netherite_boots[minecraft:enchantments={levels:{\"minecraft:protection\":2,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:netherite_sword[minecraft:enchantments={levels:{\"minecraft:sharpness\":3,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:netherite_pickaxe[minecraft:enchantments={levels:{\"minecraft:efficiency\":3,\"minecraft:unbreaking\":2}}] 1",
-      "give {player} minecraft:golden_apple 1",
-      "give {player} minecraft:cooked_beef 30"
-    ],
-    "stock": 0,
-    "image": "/assets/kits/kit_netherite_enc.png"
+    "commands": ["kit give Netherita_encantado {player}"]
   },
   {
-    "id": "kit_netherite_pvp",
-    "name": "Kit Netherite PVP",
-    "emoji": "👑",
-    "tier": "netherite",
+    "id": "netherita_pvp",
+    "name": "Kit Netherita PvP",
     "price": 86.99,
-    "description": "O kit definitivo! Netherita encantada no nível máximo vanilla, com arco, escudo, totem e itens essenciais para dominar o servidor.",
-    "itens": [
-      "Espada Netherita Af. V",
-      "Machado Netherita Af. V",
-      "Arco Força V",
-      "Escudo Inq. III",
-      "5x Pérola do Fim",
-      "1x Totem",
-      "Maça Pesada",
-      "16x Flechas"
-    ],
-    "commands": [
-      "give {player} minecraft:netherite_helmet[minecraft:enchantments={levels:{\"minecraft:protection\":4,\"minecraft:unbreaking\":3,\"minecraft:respiration\":3}}] 1",
-      "give {player} minecraft:netherite_chestplate[minecraft:enchantments={levels:{\"minecraft:protection\":4,\"minecraft:unbreaking\":3}}] 1",
-      "give {player} minecraft:netherite_leggings[minecraft:enchantments={levels:{\"minecraft:protection\":4,\"minecraft:unbreaking\":3}}] 1",
-      "give {player} minecraft:netherite_boots[minecraft:enchantments={levels:{\"minecraft:protection\":4,\"minecraft:unbreaking\":3,\"minecraft:feather_falling\":4}}] 1",
-      "give {player} minecraft:netherite_sword[minecraft:enchantments={levels:{\"minecraft:sharpness\":5,\"minecraft:unbreaking\":3,\"minecraft:looting\":3}}] 1",
-      "give {player} minecraft:netherite_axe[minecraft:enchantments={levels:{\"minecraft:sharpness\":5,\"minecraft:unbreaking\":3,\"minecraft:efficiency\":5}}] 1",
-      "give {player} minecraft:bow[minecraft:enchantments={levels:{\"minecraft:power\":5,\"minecraft:unbreaking\":3,\"minecraft:infinity\":1}}] 1",
-      "give {player} minecraft:shield[minecraft:enchantments={levels:{\"minecraft:unbreaking\":3}}] 1",
-      "give {player} minecraft:ender_pearl 5",
-      "give {player} minecraft:totem_of_undying 1",
-      "give {player} minecraft:mace 1",
-      "give {player} minecraft:arrow 16"
-    ],
-    "stock": 0,
-    "image": "/assets/kits/kit_netherite_pvp.png"
+    "commands": ["kit give Netherita_PvP {player}"]
+  },
+  {
+    "id": "imortal",
+    "name": "Kit Imortal",
+    "price": 19.99,
+    "commands": ["kit give Imortal {player}"]
   }
 ]
