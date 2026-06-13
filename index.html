@@ -1014,6 +1014,98 @@
       .stats-bar { gap: 2rem; }
       .hero-title { font-size: 1rem; }
     }
+  
+    /* ── PAINEL SECRETO DE TESTES ───────────────────────────── */
+    .secret-test-btn {
+      position: fixed;
+      right: 8px;
+      bottom: 8px;
+      width: 16px;
+      height: 16px;
+      opacity: 0.08;
+      z-index: 999;
+      border: 1px solid var(--purple);
+      background: var(--purple);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .secret-test-btn:hover {
+      opacity: 0.9;
+      transform: scale(1.2);
+      box-shadow: 0 0 18px rgba(184,108,255,0.7);
+    }
+
+    .test-panel-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.86);
+      backdrop-filter: blur(6px);
+      z-index: 900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .test-panel-overlay.open { display: flex; }
+
+    .test-panel {
+      width: 100%;
+      max-width: 520px;
+      background: var(--bg2);
+      border: 1px solid var(--purple);
+      border-radius: 8px;
+      box-shadow: 0 0 45px rgba(184,108,255,0.22);
+      overflow: hidden;
+    }
+
+    .test-panel-header {
+      padding: 1.2rem 1.4rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .test-panel-title {
+      font-family: var(--pixel);
+      font-size: 0.52rem;
+      color: var(--green);
+      letter-spacing: 0.08em;
+    }
+
+    .test-panel-body {
+      padding: 1.4rem;
+    }
+
+    .test-panel .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .test-panel select {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      outline: none;
+    }
+
+    .test-panel-result {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: var(--bg3);
+      font-size: 0.82rem;
+      line-height: 1.5;
+      min-height: 42px;
+    }
+
   </style>
 </head>
 <body>
@@ -1201,6 +1293,52 @@
         </div>
         <span class="pix-status" id="pix-status">AGUARDANDO PAGAMENTO</span>
         <button class="pix-check-btn" onclick="verificarPagamento()">🔍 VERIFICAR PAGAMENTO</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── BOTÃO SECRETO DE TESTE ───────────────────────────────────── -->
+<button class="secret-test-btn" title="Painel secreto" onclick="openTestPanel()"></button>
+
+<div class="test-panel-overlay" id="test-panel-overlay">
+  <div class="test-panel">
+    <div class="test-panel-header">
+      <span class="test-panel-title">⚙️ PAINEL SECRETO DE TESTES</span>
+      <button class="modal-close" onclick="closeTestPanel()">✕</button>
+    </div>
+    <div class="test-panel-body">
+      <div class="form-group">
+        <label class="form-label">Senha</label>
+        <input class="form-input" id="test-password" type="password" placeholder="Senha do painel" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nick no Minecraft</label>
+        <input class="form-input" id="test-nick" type="text" placeholder="NickExato"
+               maxlength="16" oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'')" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <select id="test-type" onchange="loadTestItems()">
+          <option value="kit">Kit</option>
+          <option value="vip">VIP</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Item para testar</label>
+        <select id="test-item"></select>
+      </div>
+
+      <button class="btn-primary" style="width:100%;font-size:0.5rem;" onclick="sendTestDelivery()">
+        ENVIAR TESTE
+      </button>
+
+      <div class="test-panel-result" id="test-result">
+        O jogador precisa estar online para receber o teste.
       </div>
     </div>
   </div>
@@ -1617,6 +1755,82 @@ async function loadOnline() {
     document.getElementById('stat-online').textContent = '?';
   }
 }
+
+
+// ─── PAINEL SECRETO DE TESTES ───────────────────────────────────
+async function openTestPanel() {
+  document.getElementById('test-panel-overlay').classList.add('open');
+  await loadTestItems();
+}
+
+function closeTestPanel() {
+  document.getElementById('test-panel-overlay').classList.remove('open');
+}
+
+document.getElementById('test-panel-overlay')?.addEventListener('click', function(e) {
+  if (e.target === this) closeTestPanel();
+});
+
+async function loadTestItems() {
+  const type = document.getElementById('test-type')?.value || 'kit';
+  const select = document.getElementById('test-item');
+  if (!select) return;
+
+  select.innerHTML = '<option>Carregando...</option>';
+
+  try {
+    const endpoint = type === 'vip' ? '/api/vips' : '/api/kits';
+    const res = await fetch(API_URL + endpoint);
+    const data = await res.json();
+
+    select.innerHTML = data.map(item => {
+      const price = item.price ? ' — R$ ' + fmtPrice(item.price) : '';
+      return `<option value="${item.id}">${item.name}${price}</option>`;
+    }).join('');
+  } catch(e) {
+    select.innerHTML = '<option value="">Erro ao carregar</option>';
+  }
+}
+
+async function sendTestDelivery() {
+  const password = document.getElementById('test-password').value;
+  const nick = document.getElementById('test-nick').value.trim();
+  const type = document.getElementById('test-type').value;
+  const itemId = document.getElementById('test-item').value;
+  const result = document.getElementById('test-result');
+
+  if (!password || !nick || !itemId) {
+    result.textContent = '❌ Preencha senha, nick e item.';
+    return;
+  }
+
+  result.textContent = '⏳ Enviando teste...';
+
+  try {
+    const res = await fetch(API_URL + '/api/admin/test-deliver', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, type, itemId, nick })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Erro no teste');
+
+    if (data.reason === 'player_offline') {
+      result.textContent = '⏳ Player offline. Entre no servidor com esse nick para testar.';
+      showToast('⏳ Player offline para teste.', 4000);
+      return;
+    }
+
+    result.textContent = `✅ ${data.message}: ${data.itemName} para ${data.nick}`;
+    showToast('✅ Teste enviado com sucesso!', 4000);
+  } catch(e) {
+    result.textContent = '❌ ' + e.message;
+    showToast('❌ Erro no teste', 4000);
+  }
+}
+
 
 // ─── INIT ────────────────────────────────────────────────────────
 loadVips();
