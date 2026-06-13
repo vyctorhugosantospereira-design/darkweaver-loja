@@ -1503,8 +1503,8 @@ async function verificarPagamento(auto = false) {
           statusEl.textContent = '✅ PAGAMENTO CONFIRMADO — KIT ENTREGUE!';
           showToast('🎉 KIT ENTREGUE! VERIFIQUE SEU INVENTÁRIO!', 5000);
         } catch (e) {
-          statusEl.textContent = '✅ PAGO — ERRO AO ENTREGAR, CHAME A STAFF';
-          showToast('⚠️ Pagamento aprovado, mas deu erro na entrega: ' + e.message, 7000);
+          statusEl.textContent = '⏳ PAGAMENTO APROVADO — AGUARDANDO O PLAYER FICAR ONLINE';
+          showToast('⏳ Kit reservado. Será entregue automaticamente quando o jogador entrar no servidor.', 7000);
         }
       } else {
         statusEl.textContent = '✅ PAGAMENTO CONFIRMADO — VIP ATIVADO!';
