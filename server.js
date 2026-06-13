@@ -58,6 +58,7 @@ const VIP_PENDING_FILE = path.join(CONFIG.BOT_DIR, 'mc_vip_pending.json');
 
 const MC_KITS_FILE        = path.join(CONFIG.BOT_DIR, 'mc_kits.json');
 const KIT_ORDERS_FILE     = path.join(CONFIG.BOT_DIR, 'mc_kit_orders_site.json');
+const KIT_PENDING_FILE    = path.join(CONFIG.BOT_DIR, 'mc_kit_pending_site.json');
 
 function loadJSON(file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
@@ -205,6 +206,89 @@ async function entregarKit(nick, kit) {
   }
   console.log(`[KIT] ✅ Kit entregue: ${nick} → ${kit.name}`);
 }
+
+async function getOnlinePlayers() {
+  const raw = await rconExec('list');
+  if (!raw) return [];
+  const clean = String(raw).replace(/\u00a7[0-9a-fklmnorA-FKLMNOR]/g, '').replace(/\r/g, '').trim();
+  const colonIdx = clean.lastIndexOf(':');
+  if (colonIdx === -1) return [];
+  const afterColon = clean.slice(colonIdx + 1).replace(/\n/g, ',').trim();
+  if (!afterColon) return [];
+  return afterColon.split(',').map(p => p.trim()).filter(Boolean);
+}
+
+async function isPlayerOnline(nick) {
+  const players = await getOnlinePlayers();
+  return players.some(p => p.toLowerCase() === String(nick).toLowerCase());
+}
+
+function addPendingKit(order, kit) {
+  const pending = loadJSON(KIT_PENDING_FILE, {});
+  const key = String(order.nick).toLowerCase();
+  if (!pending[key]) pending[key] = [];
+  const exists = pending[key].some(x => String(x.paymentId) === String(order.paymentId));
+  if (!exists) {
+    pending[key].push({
+      paymentId: String(order.paymentId),
+      kitId: order.kitId,
+      kitName: kit.name,
+      nick: order.nick,
+      price: order.price || kit.price || 0,
+      commands: kit.commands || [],
+      createdAt: Date.now(),
+      status: 'pending_offline'
+    });
+    saveJSON(KIT_PENDING_FILE, pending);
+  }
+}
+
+async function deliverKitWhenOnline(order, kit) {
+  const online = await isPlayerOnline(order.nick);
+  if (!online) {
+    addPendingKit(order, kit);
+    console.log(`[KIT] ⏳ ${order.nick} offline — compra salva como pendente: ${kit.name}`);
+    return { delivered: false, pending: true, reason: 'player_offline' };
+  }
+  await entregarKit(order.nick, kit);
+  return { delivered: true, pending: false };
+}
+
+async function processPendingKits() {
+  const pending = loadJSON(KIT_PENDING_FILE, {});
+  const kits = loadAllKits();
+  let changed = false;
+  for (const [key, list] of Object.entries(pending)) {
+    const remaining = [];
+    for (const item of list) {
+      const online = await isPlayerOnline(item.nick);
+      if (!online) {
+        remaining.push(item);
+        continue;
+      }
+      const kit = kits.find(k => k.id === item.kitId) || { name: item.kitName, commands: item.commands || [] };
+      try {
+        await entregarKit(item.nick, kit);
+        const orders = loadJSON(KIT_ORDERS_FILE, {});
+        if (orders[item.paymentId]) {
+          orders[item.paymentId].delivered = true;
+          orders[item.paymentId].deliveredAt = Date.now();
+          orders[item.paymentId].deliveryStatus = 'delivered_after_login';
+          saveJSON(KIT_ORDERS_FILE, orders);
+        }
+        changed = true;
+        console.log(`[KIT] ✅ Pendente entregue automaticamente: ${item.nick} → ${kit.name}`);
+      } catch(e) {
+        console.error('[KIT] Erro ao entregar pendente:', e.message);
+        remaining.push(item);
+      }
+    }
+    if (remaining.length) pending[key] = remaining;
+    else delete pending[key];
+  }
+  if (changed) saveJSON(KIT_PENDING_FILE, pending);
+}
+
 
 // ─── AVISAR BOT DISCORD ───────────────────────────────────────────────────
 function notifyBot(payload) {
@@ -422,44 +506,35 @@ app.post('/api/kits/pix', async (req, res) => {
   }
 });
 
-// GET /api/kits/pix/status/:id — verifica e entrega kit
+// GET /api/kits/pix/status/:id — verifica e entrega kit somente se o jogador estiver online
 app.get('/api/kits/pix/status/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const data   = await consultarStatus(id);
     const orders = loadJSON(KIT_ORDERS_FILE, {});
     const order  = orders[id];
+    let delivery = null;
 
     if (data.status === 'approved' && order && !order.delivered) {
       const kits = loadAllKits();
       const kit  = kits.find(k => k.id === order.kitId);
       if (kit) {
-        order.delivered   = true;
-        order.deliveredAt = Date.now();
+        delivery = await deliverKitWhenOnline(order, kit);
+        if (delivery.delivered) {
+          order.delivered = true;
+          order.deliveredAt = Date.now();
+          order.deliveryStatus = 'delivered_online';
+        } else {
+          order.deliveryStatus = 'pending_player_offline';
+        }
+        order.status = 'approved';
         orders[id] = order;
         saveJSON(KIT_ORDERS_FILE, orders);
-
-        notifyBot({
-          kind: 'kit',
-          paymentId: id,
-          kitId: order.kitId,
-          nick: order.nick,
-          discord: order.discord || null,
-          price: order.price || kit.price || 0
-        }).then(botOk => {
-          if (!botOk) {
-            // Fallback: se o bot não responder, entrega via RCON direto pelo site.
-            entregarKit(order.nick, kit).catch(e =>
-              console.error('[SITE] Erro ao entregar kit:', e.message)
-            );
-          } else {
-            console.log('[SITE] ✅ Kit enviado para o bot: ' + order.nick + ' → ' + kit.name);
-          }
-        });
       }
     }
 
-    res.json(data);
+    await processPendingKits().catch(e => console.error('[KIT] Erro ao processar pendentes:', e.message));
+    res.json({ ...data, delivery });
   } catch(e) {
     res.status(500).json({ error: e.message });
   }
@@ -492,23 +567,31 @@ app.post('/webhook/mp', async (req, res) => {
       const kits = loadAllKits();
       const kit  = kits.find(k => k.id === kitOrder.kitId);
       if (kit) {
-        kitOrder.delivered   = true;
-        kitOrder.deliveredAt = Date.now();
+        const result = await deliverKitWhenOnline(kitOrder, kit);
+        if (result.delivered) {
+          kitOrder.delivered = true;
+          kitOrder.deliveredAt = Date.now();
+          kitOrder.deliveryStatus = 'delivered_online';
+        } else {
+          kitOrder.deliveryStatus = 'pending_player_offline';
+        }
         kitOrders[paymentId] = kitOrder;
         saveJSON(KIT_ORDERS_FILE, kitOrders);
-        const botOk = await notifyBot({
-          kind: 'kit',
-          paymentId,
-          kitId: kitOrder.kitId,
-          nick: kitOrder.nick,
-          discord: kitOrder.discord || null,
-          price: kitOrder.price || kit.price || 0
-        });
-        if (!botOk) await entregarKit(kitOrder.nick, kit);
       }
     }
   } catch(e) {
     console.error('[WEBHOOK] Erro:', e.message);
+  }
+});
+
+
+// POST /api/kits/process-pending — força verificar pendentes manualmente
+app.post('/api/kits/process-pending', async (req, res) => {
+  try {
+    await processPendingKits();
+    res.json({ ok: true });
+  } catch(e) {
+    res.status(500).json({ ok: false, error: e.message });
   }
 });
 
@@ -527,6 +610,9 @@ if (require.main === module) {
   console.log(`  📦 VIPs carregados de: ${VIP_SHOP_FILE}`);
   console.log(`  💰 Mercado Pago: ${CONFIG.MP_ACCESS_TOKEN !== 'SEU_TOKEN_MERCADO_PAGO_AQUI' ? '✅ configurado' : '⚠️ CONFIGURE O TOKEN!'}`);
   console.log(`  🎮 RCON: ${CONFIG.RCON_PASSWORD !== 'SUA_SENHA_RCON_AQUI' ? '✅ configurado' : '⚠️ CONFIGURE A SENHA!'}`);
+  console.log('  ⏳ Entrega online: se jogador estiver offline, fica pendente e entrega ao entrar.');
+  setInterval(() => processPendingKits().catch(e => console.error('[KIT] Erro no verificador de pendentes:', e.message)), 30000);
+  processPendingKits().catch(() => {});
   console.log('');
   });
 }
