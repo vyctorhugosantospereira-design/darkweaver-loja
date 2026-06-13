@@ -1,0 +1,43 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/kits/pix/deliver"
+  to = "/.netlify/functions/kits-pix-deliver"
+  status = 200
+
+[[redirects]]
+  from = "/api/online"
+  to = "/.netlify/functions/online"
+  status = 200
+
+[[redirects]]
+  from = "/api/kits/pix/status/*"
+  to = "/.netlify/functions/kits-pix-status/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/kits/pix"
+  to = "/.netlify/functions/kits-pix"
+  status = 200
+
+[[redirects]]
+  from = "/api/kits"
+  to = "/.netlify/functions/kits"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/webhook/mp"
+  to = "/.netlify/functions/api/webhook/mp"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

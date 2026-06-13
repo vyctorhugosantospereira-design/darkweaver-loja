@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DarkWeaver — Loja VIP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --bg:        #0a0c0a;
+      --bg2:       #0f130f;
+      --bg3:       #141a14;
+      --border:    #1e2d1e;
+      --green:     #3dff6e;
+      --green-dim: #1a6632;
+      --green-glow:#3dff6e44;
+      --purple:    #9b59b6;
+      --purple-dim:#2d1a3d;
+      --gold:      #f0c040;
+      --gold-dim:  #3d2e00;
+      --red:       #e74c3c;
+      --text:      #d4e8d4;
+      --text-dim:  #6a8a6a;
+      --pixel:     'Press Start 2P', monospace;
+      --body:      'Inter', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── GRID BACKGROUND ────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(10,12,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: var(--pixel);
+      font-size: 0.65rem;
+      color: var(--green);
+      text-shadow: 0 0 12px var(--green-glow);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--green); }
+
+    .nav-ip {
+      font-family: var(--pixel);
+      font-size: 0.5rem;
+      color: var(--green);
+      background: var(--green-glow);
+      border: 1px solid var(--green-dim);
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .nav-ip:hover { background: #3dff6e22; }
+
+    /* ── HERO ─────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+    }
+
+    .hero-badge {
+      font-family: var(--pixel);
+      font-size: 0.45rem;
+      color: var(--green);
+      background: var(--green-glow);
+      border: 1px solid var(--green-dim);
+      padding: 0.5rem 1rem;
+      border-radius: 2px;
+      letter-spacing: 0.15em;
+      margin-bottom: 2rem;
+      animation: pulse-badge 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-badge {
+      0%, 100% { box-shadow: 0 0 0 0 var(--green-glow); }
+      50%       { box-shadow: 0 0 0 6px transparent; }
+    }
+
+    .hero-title {
+      font-family: var(--pixel);
+      font-size: clamp(1.2rem, 4vw, 2.2rem);
+      line-height: 1.6;
+      color: #fff;
+      text-shadow: 0 0 30px var(--green-glow), 0 0 60px var(--green-glow);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-title span { color: var(--green); }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text-dim);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      font-family: var(--pixel);
+      font-size: 0.55rem;
+      background: var(--green);
+      color: #000;
+      border: none;
+      padding: 1rem 1.8rem;
+      border-radius: 2px;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: transform 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--green-glow);
+    }
+
+    .btn-secondary {
+      font-family: var(--pixel);
+      font-size: 0.55rem;
+      background: transparent;
+      color: var(--green);
+      border: 1px solid var(--green-dim);
+      padding: 1rem 1.8rem;
+      border-radius: 2px;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: background 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover { background: var(--green-glow); }
+
+    /* ── STATS BAR ────────────────────────────────────────────── */
+    .stats-bar {
+      position: relative;
+      z-index: 1;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: var(--pixel);
+      font-size: 1.1rem;
+      color: var(--green);
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── SECTION ──────────────────────────────────────────────── */
+    section {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+
+    .section-label {
+      font-family: var(--pixel);
+      font-size: 0.4rem;
+      color: var(--green);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+
+    .section-title {
+      font-family: var(--pixel);
+      font-size: clamp(0.8rem, 2.5vw, 1.2rem);
+      color: #fff;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .section-desc {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      max-width: 600px;
+      margin-bottom: 3rem;
+    }
+
+    /* ── INFO CARDS (como é o servidor) ──────────────────────── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .info-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.8rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .info-card:hover {
+      border-color: var(--green-dim);
+      transform: translateY(-3px);
+    }
+
+    .info-card-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .info-card h3 {
+      font-family: var(--pixel);
+      font-size: 0.55rem;
+      color: var(--green);
+      margin-bottom: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+
+    .info-card p {
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ── VIP SHOP ─────────────────────────────────────────────── */
+    #loja { background: var(--bg2); }
+    #loja::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .vip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .vip-card {
+      position: relative;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .vip-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--purple);
+    }
+
+    .vip-card.featured {
+      border-color: var(--gold-dim);
+    }
+
+    .vip-card.featured:hover { border-color: var(--gold); }
+
+    .vip-badge {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      font-family: var(--pixel);
+      font-size: 0.35rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 2px;
+      letter-spacing: 0.1em;
+    }
+
+    .vip-badge.popular {
+      background: var(--gold-dim);
+      color: var(--gold);
+      border: 1px solid var(--gold);
+    }
+
+    .vip-card-top {
+      padding: 1.8rem 1.8rem 0;
+    }
+
+    .vip-tier {
+      font-family: var(--pixel);
+      font-size: 0.4rem;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+      margin-bottom: 0.5rem;
+    }
+
+    .vip-name {
+      font-family: var(--pixel);
+      font-size: 1rem;
+      color: var(--purple);
+      margin-bottom: 0.3rem;
+    }
+
+    .vip-card.featured .vip-name { color: var(--gold); }
+
+    .vip-duration {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-bottom: 1.2rem;
+    }
+
+    .vip-price {
+      display: flex;
+      align-items: baseline;
+      gap: 0.3rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .vip-price-currency {
+      font-family: var(--pixel);
+      font-size: 0.5rem;
+      color: var(--text-dim);
+    }
+
+    .vip-price-value {
+      font-family: var(--pixel);
+      font-size: 1.6rem;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .vip-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 1.8rem;
+    }
+
+    .vip-benefits {
+      padding: 1.2rem 1.8rem 1.8rem;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .vip-benefits li {
+      font-size: 0.83rem;
+      color: var(--text-dim);
+      display: flex;
+      gap: 0.6rem;
+      line-height: 1.4;
+    }
+
+    .vip-benefits li::before {
+      content: '▸';
+      color: var(--green);
+      flex-shrink: 0;
+    }
+
+    .vip-btn {
+      font-family: var(--pixel);
+      font-size: 0.45rem;
+      width: calc(100% - 3.6rem);
+      margin: 0 1.8rem 1.8rem;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .vip-btn:hover { opacity: 0.88; transform: scale(0.99); }
+
+    .vip-btn-purple { background: var(--purple); color: #fff; }
+    .vip-btn-gold   { background: var(--gold);   color: #000; }
+
+    /* ── KITS SHOP ─────────────────────────────────────────────── */
+    #kits { background: var(--bg3); }
+    #kits::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+
+    .kit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .kit-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .kit-card:hover { transform: translateY(-4px); border-color: var(--green-dim); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+
+    /* Tier colors */
+    .kit-card.tier-ferro  { border-color: #555; }
+    .kit-card.tier-ferro:hover  { border-color: #aaa; }
+    .kit-card.tier-diamante { border-color: #1a4a6a; }
+    .kit-card.tier-diamante:hover { border-color: #5dade2; }
+    .kit-card.tier-netherite { border-color: #3a1a3a; }
+    .kit-card.tier-netherite:hover { border-color: #9b59b6; }
+    .kit-card.tier-especial  { border-color: var(--gold-dim); }
+    .kit-card.tier-especial:hover  { border-color: var(--gold); }
+
+    /* Banner image */
+    .kit-banner {
+      width: 100%;
+      aspect-ratio: 16/7;
+      object-fit: cover;
+      display: block;
+    }
+    .kit-banner-placeholder {
+      width: 100%;
+      aspect-ratio: 16/7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kit-card-top {
+      padding: 1.2rem 1.5rem 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
+
+    .kit-emoji { font-size: 1.8rem; line-height: 1; flex-shrink: 0; }
+    .kit-info  { flex: 1; }
+
+    .kit-tier {
+      font-family: var(--pixel);
+      font-size: 0.32rem;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+    }
+
+    .kit-name {
+      font-family: var(--pixel);
+      font-size: 0.6rem;
+      color: var(--green);
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+    .tier-ferro   .kit-name { color: #ccc; }
+    .tier-diamante .kit-name { color: #5dade2; }
+    .tier-netherite .kit-name { color: #9b59b6; }
+    .tier-especial  .kit-name { color: var(--gold); }
+
+    .kit-price { display: flex; align-items: baseline; gap: 0.2rem; }
+
+    .kit-price-currency {
+      font-family: var(--pixel);
+      font-size: 0.4rem;
+      color: var(--text-dim);
+    }
+
+    .kit-price-value {
+      font-family: var(--pixel);
+      font-size: 1.1rem;
+      color: #fff;
+    }
+
+    .kit-divider { border: none; border-top: 1px solid var(--border); margin: 1rem 1.5rem 0; }
+
+    .kit-desc {
+      padding: 0.8rem 1.5rem 0;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .kit-itens {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.6rem 1.5rem 0;
+    }
+
+    .kit-item-tag {
+      font-size: 0.72rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.2rem 0.5rem;
+      color: var(--text-dim);
+    }
+
+    .kit-stock {
+      margin: 0.6rem 1.5rem 0;
+      font-family: var(--pixel);
+      font-size: 0.35rem;
+      letter-spacing: 0.1em;
+    }
+    .kit-stock.em-estoque  { color: var(--green); }
+    .kit-stock.sem-estoque { color: var(--red); }
+
+    .kit-btn {
+      font-family: var(--pixel);
+      font-size: 0.45rem;
+      margin: 1rem 1.5rem 1.5rem;
+      padding: 0.85rem;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      background: var(--green);
+      color: #000;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .tier-diamante .kit-btn { background: #5dade2; color: #000; }
+    .tier-netherite .kit-btn { background: #9b59b6; color: #fff; }
+    .tier-especial  .kit-btn { background: var(--gold); color: #000; }
+
+    .kit-btn:hover { opacity: 0.85; transform: scale(0.99); }
+    .kit-btn:disabled {
+      background: var(--bg3);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      cursor: not-allowed;
+      transform: none;
+      opacity: 1;
+    }
+
+    /* ── LOADING STATE ────────────────────────────────────────── */
+    .vip-loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-dim);
+      font-family: var(--pixel);
+      font-size: 0.5rem;
+      letter-spacing: 0.1em;
+    }
+
+    .vip-loading::after {
+      content: '';
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--green);
+      animation: blink 1s step-end infinite;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── MODAL ────────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 480px;
+      overflow: hidden;
+      animation: modal-in 0.2s ease-out;
+    }
+
+    @keyframes modal-in {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 1.5rem 1.8rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-family: var(--pixel);
+      font-size: 0.6rem;
+      color: var(--green);
+      letter-spacing: 0.08em;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.2rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.2rem;
+    }
+
+    .modal-close:hover { color: var(--red); }
+
+    .modal-body { padding: 1.8rem; }
+
+    .modal-vip-info {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-vip-info-name {
+      font-family: var(--pixel);
+      font-size: 0.55rem;
+      color: var(--purple);
+    }
+
+    .modal-vip-info-price {
+      font-family: var(--pixel);
+      font-size: 0.65rem;
+      color: var(--green);
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-family: var(--body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus { border-color: var(--green-dim); }
+    .form-input::placeholder { color: var(--text-dim); }
+
+    .form-hint {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 0.35rem;
+    }
+
+    .pix-box {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .pix-box.visible { display: flex; }
+
+    .pix-qr {
+      width: 200px;
+      height: 200px;
+      border: 2px solid var(--green-dim);
+      border-radius: 6px;
+      object-fit: contain;
+      background: #fff;
+      padding: 4px;
+    }
+
+    .pix-code-wrap {
+      width: 100%;
+    }
+
+    .pix-code {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.7rem 1rem;
+      color: var(--green);
+      font-family: monospace;
+      font-size: 0.7rem;
+      word-break: break-all;
+      resize: none;
+      outline: none;
+      margin-bottom: 0.5rem;
+    }
+
+    .pix-copy-btn {
+      font-family: var(--pixel);
+      font-size: 0.45rem;
+      background: var(--green);
+      color: #000;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 3px;
+      cursor: pointer;
+      width: 100%;
+      letter-spacing: 0.08em;
+      transition: opacity 0.2s;
+    }
+
+    .pix-copy-btn:hover { opacity: 0.85; }
+
+    .pix-status {
+      font-family: var(--pixel);
+      font-size: 0.4rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    .pix-status.paid { color: var(--green); }
+
+    .pix-check-btn {
+      font-family: var(--pixel);
+      font-size: 0.4rem;
+      background: transparent;
+      color: var(--green);
+      border: 1px solid var(--green-dim);
+      padding: 0.5rem 1rem;
+      border-radius: 3px;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      margin-top: 0.5rem;
+      transition: background 0.2s;
+    }
+
+    .pix-check-btn:hover { background: var(--green-glow); }
+
+    .alert {
+      padding: 0.8rem 1rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      margin-top: 1rem;
+    }
+
+    .alert-error { background: #2d0f0f; border: 1px solid #6b1a1a; color: #ff8888; }
+    .alert-success { background: #0f2d15; border: 1px solid #1a6b2d; color: #88ff9a; }
+
+    /* ── HOW IT WORKS ─────────────────────────────────────────── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      counter-reset: step;
+    }
+
+    .step {
+      position: relative;
+      padding-left: 1rem;
+      counter-increment: step;
+    }
+
+    .step::before {
+      content: counter(step, decimal-leading-zero);
+      font-family: var(--pixel);
+      font-size: 0.4rem;
+      color: var(--green-dim);
+      display: block;
+      margin-bottom: 0.8rem;
+      letter-spacing: 0.1em;
+    }
+
+    .step h3 {
+      font-family: var(--pixel);
+      font-size: 0.55rem;
+      color: #fff;
+      margin-bottom: 0.6rem;
+      line-height: 1.6;
+    }
+
+    .step p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ── FOOTER ───────────────────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+    }
+
+    footer span {
+      font-family: var(--pixel);
+      font-size: 0.4rem;
+      color: var(--green);
+    }
+
+    /* ── TOAST ────────────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg2);
+      border: 1px solid var(--green-dim);
+      color: var(--green);
+      font-family: var(--pixel);
+      font-size: 0.45rem;
+      padding: 0.8rem 1.5rem;
+      border-radius: 4px;
+      z-index: 500;
+      letter-spacing: 0.08em;
+      transition: transform 0.3s ease;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── RESPONSIVE ───────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .stats-bar { gap: 2rem; }
+      .hero-title { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────────────────── -->
+<nav>
+  <a href="#" class="nav-logo">DARK<br>WEAVER</a>
+  <ul class="nav-links">
+    <li><a href="#inicio">Início</a></li>
+    <li><a href="#sobre">Servidor</a></li>
+    <li><a href="#loja">Loja VIP</a></li>
+    <li><a href="#kits">Kits</a></li>
+    <li><a href="#como-funciona">Como Funciona</a></li>
+  </ul>
+  <button class="nav-ip" onclick="copyIP()">zoe.lura.pro:35580</button>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────────── -->
+<div id="inicio" class="hero">
+  <div class="hero-badge">🟢 SERVIDOR ONLINE · SEMI-ANARQUIA</div>
+  <h1 class="hero-title">
+    ENTRE NO<br><span>DARKWEAVER</span>
+  </h1>
+  <p class="hero-sub">
+    Servidor de Minecraft Semi-Anarquia brasileiro. PvP, fações, liberdade total —
+    com VIPs que deixam sua experiência ainda mais insana.
+  </p>
+  <div class="hero-actions">
+    <a href="#loja" class="btn-primary">VER VIPS</a>
+    <button class="btn-secondary" onclick="copyIP()">COPIAR IP</button>
+  </div>
+</div>
+
+<!-- ── STATS ────────────────────────────────────────────────────── -->
+<div class="stats-bar">
+  <div class="stat">
+    <span class="stat-value" id="stat-online">—</span>
+    <span class="stat-label">Jogadores Online</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">1.21</span>
+    <span class="stat-label">Versão Minecraft</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">24/7</span>
+    <span class="stat-label">Uptime</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">PIX</span>
+    <span class="stat-label">Pagamento Seguro</span>
+  </div>
+</div>
+
+<!-- ── SOBRE ─────────────────────────────────────────────────────── -->
+<section id="sobre">
+  <div class="section-label">// SOBRE O SERVIDOR</div>
+  <h2 class="section-title">SEMI-ANARQUIA.<br>SUAS REGRAS.</h2>
+  <p class="section-desc">
+    DarkWeaver é um servidor brasileiro de Minecraft focado em liberdade, PvP honesto e
+    comunidade ativa. Sem pay-to-win — os VIPs dão cosméticos, kits e vantagens que não
+    desequilibram o jogo.
+  </p>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="info-card-icon">⚔️</div>
+      <h3>PVP SEMI-ANARQUIA</h3>
+      <p>Combate sem restrições absurdas. Construa sua base, proteja seu território, domine o mapa.</p>
+    </div>
+    <div class="info-card">
+      <div class="info-card-icon">🌍</div>
+      <h3>MUNDO GIGANTE</h3>
+      <p>Mapa enorme para explorar, construir e criar impérios. Nether, End e dimensões customizadas.</p>
+    </div>
+    <div class="info-card">
+      <div class="info-card-icon">💎</div>
+      <h3>ECONOMIA ATIVA</h3>
+      <p>Comércio entre jogadores, leilões e uma economia que funciona de verdade — não só no papel.</p>
+    </div>
+    <div class="info-card">
+      <div class="info-card-icon">🛡️</div>
+      <h3>ANTI-CHEAT FORTE</h3>
+      <p>Sistema anti-hack robusto. Jogo justo para todo mundo, sem aquela raiva de cheater.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── LOJA ──────────────────────────────────────────────────────── -->
+<section id="loja">
+  <div class="section-label">// LOJA VIP</div>
+  <h2 class="section-title">ESCOLHA SEU VIP</h2>
+  <p class="section-desc">
+    Ativação automática assim que o pagamento PIX for confirmado. Sem espera, sem burocracia.
+  </p>
+  <div class="vip-grid" id="vip-grid">
+    <div class="vip-loading">CARREGANDO VIPS</div>
+  </div>
+</section>
+
+<!-- ── KITS ──────────────────────────────────────────────────────── -->
+<section id="kits">
+  <div class="section-label">// LOJA DE KITS</div>
+  <h2 class="section-title">KITS DE ITENS</h2>
+  <p class="section-desc">
+    Entrega automática no servidor assim que o pagamento for confirmado.
+    Itens aparecem direto no seu inventário.
+  </p>
+  <div class="kit-grid" id="kit-grid">
+    <div class="vip-loading">CARREGANDO KITS</div>
+  </div>
+</section>
+
+<!-- ── COMO FUNCIONA ─────────────────────────────────────────────── -->
+<section id="como-funciona">
+  <div class="section-label">// COMO FUNCIONA</div>
+  <h2 class="section-title">EM 4 PASSOS</h2>
+  <p class="section-desc">Simples assim. Do clique ao jogo em minutos.</p>
+  <div class="steps">
+    <div class="step">
+      <h3>ESCOLHA SEU VIP</h3>
+      <p>Veja os benefícios de cada plano e clique em Comprar quando decidir.</p>
+    </div>
+    <div class="step">
+      <h3>INFORME SEU NICK</h3>
+      <p>Digite seu nick do Minecraft exatamente como aparece no jogo.</p>
+    </div>
+    <div class="step">
+      <h3>PAGUE VIA PIX</h3>
+      <p>Escaneie o QR code ou copie o código PIX e pague pelo seu banco.</p>
+    </div>
+    <div class="step">
+      <h3>JOGUE COM VIP</h3>
+      <p>Ativação automática em até 1 minuto após confirmação do pagamento.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ────────────────────────────────────────────────────── -->
+<footer>
+  <p><span>DARKWEAVER</span> &nbsp;·&nbsp; zoe.lura.pro:35580 &nbsp;·&nbsp; Pagamentos processados com segurança via Mercado Pago</p>
+  <p style="margin-top:0.5rem; font-size:0.72rem;">© 2026 DarkWeaver. Não somos afiliados à Mojang Studios.</p>
+</footer>
+
+<!-- ── MODAL COMPRA ──────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">💎 COMPRAR</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- info do VIP -->
+      <div class="modal-vip-info">
+        <span class="modal-vip-info-name" id="modal-vip-name">—</span>
+        <span class="modal-vip-info-price" id="modal-vip-price">R$ —</span>
+      </div>
+
+      <!-- Formulário -->
+      <div id="form-area">
+        <div class="form-group">
+          <label class="form-label" for="nick-input">Nick no Minecraft</label>
+          <input class="form-input" id="nick-input" type="text"
+                 placeholder="SeuNickExato" maxlength="16"
+                 oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'')"/>
+          <p class="form-hint">Exatamente como aparece no jogo (sem espaços)</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="discord-input">Discord (opcional)</label>
+          <input class="form-input" id="discord-input" type="text"
+                 placeholder="seuusuario" maxlength="40"/>
+          <p class="form-hint">Para receber o cargo VIP no Discord também</p>
+        </div>
+        <button class="btn-primary" style="width:100%;margin-top:0.5rem;font-size:0.5rem;"
+                onclick="gerarPix()">
+          GERAR PIX
+        </button>
+        <div id="form-error"></div>
+      </div>
+
+      <!-- PIX Box -->
+      <div class="pix-box" id="pix-box">
+        <img class="pix-qr" id="pix-qr" src="" alt="QR Code PIX" />
+        <div class="pix-code-wrap">
+          <textarea class="pix-code" id="pix-code-text" rows="3" readonly></textarea>
+          <button class="pix-copy-btn" onclick="copiarPix()">📋 COPIAR CÓDIGO PIX</button>
+        </div>
+        <span class="pix-status" id="pix-status">AGUARDANDO PAGAMENTO</span>
+        <button class="pix-check-btn" onclick="verificarPagamento()">🔍 VERIFICAR PAGAMENTO</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ─────────────────────────────────────────────────────── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────────────────
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3001'
+  : '';
+
+// ─── STATE ───────────────────────────────────────────────────────
+let currentItem      = null;  // vip ou kit selecionado
+let currentItemType  = null;  // 'vip' ou 'kit'
+let currentPaymentId = null;
+let currentKitId = null;
+let currentNick = null;
+let pollInterval     = null;
+
+// ─── TOAST ───────────────────────────────────────────────────────
+function showToast(msg, duration = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ─── COPY IP ─────────────────────────────────────────────────────
+function copyIP() {
+  navigator.clipboard.writeText('zoe.lura.pro:35580')
+    .then(() => showToast('✅ IP COPIADO!'))
+    .catch(() => showToast('IP: zoe.lura.pro:35580'));
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────
+function parseBenefits(desc) {
+  if (!desc) return ['Benefícios exclusivos'];
+  return desc.split(/[•\n]+/).map(s => s.trim()).filter(Boolean);
+}
+
+function fmtPrice(p) {
+  return Number(p).toFixed(2).replace('.', ',');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// VIPs
+// ═══════════════════════════════════════════════════════════════
+async function loadVips() {
+  try {
+    const res  = await fetch(API_URL + '/api/vips');
+    const data = await res.json();
+    renderVips(data);
+  } catch(e) {
+    renderVips([
+      { id: 'vip_bronze', name: 'VIP Bronze', price: 19.90, dias: 30,
+        description: 'Kit de início • Prefixo no chat • Comandos exclusivos • Suporte prioritário' },
+      { id: 'vip_prata',  name: 'VIP Prata',  price: 34.90, dias: 30,
+        description: 'Tudo do Bronze • Kit melhorado • /fly no lobby • Mais /home slots' },
+      { id: 'vip_ouro',   name: 'VIP Ouro',   price: 59.90, dias: 30,
+        description: 'Tudo do Prata • Kit premium • Partículas exclusivas • Rank no Discord' },
+    ]);
+    console.warn('[SITE] Backend offline — VIPs de exemplo.');
+  }
+}
+
+function renderVips(vips) {
+  const grid = document.getElementById('vip-grid');
+  if (!vips || !vips.length) {
+    grid.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:3rem;">Nenhum VIP disponível no momento.</p>';
+    return;
+  }
+  grid.innerHTML = vips.map((v, i) => {
+    const isFeatured = i === 1;
+    const btnClass   = isFeatured ? 'vip-btn-gold' : 'vip-btn-purple';
+    const benefits   = parseBenefits(v.description);
+    return `
+      <div class="vip-card ${isFeatured ? 'featured' : ''}">
+        ${isFeatured ? '<span class="vip-badge popular">⭐ POPULAR</span>' : ''}
+        <div class="vip-card-top">
+          <div class="vip-tier">DARKWEAVER VIP</div>
+          <div class="vip-name">${v.name.toUpperCase()}</div>
+          <div class="vip-duration">⏳ ${v.dias || 30} dias de acesso</div>
+          <div class="vip-price">
+            <span class="vip-price-currency">R$</span>
+            <span class="vip-price-value">${fmtPrice(v.price)}</span>
+          </div>
+        </div>
+        <hr class="vip-divider" />
+        <ul class="vip-benefits">
+          ${benefits.map(b => `<li>${b}</li>`).join('')}
+        </ul>
+        <button class="vip-btn ${btnClass}" onclick='openModal("vip", ${JSON.stringify(v)})'>
+          COMPRAR AGORA
+        </button>
+      </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// KITS
+// ═══════════════════════════════════════════════════════════════
+const KITS_FALLBACK = [
+  {
+    id: 'kit_ferro',
+    name: 'Kit Ferro',
+    emoji: '⚔️',
+    tier: 'ferro',
+    price: 3.67,
+    description: 'Um kit simples e eficiente para começar sua jornada, contendo armadura de ferro, armas, ferramentas e itens básicos para sobrevivência e combate.',
+    itens: ['Espada de Ferro', 'Picareta de Ferro', 'Bife Cozido', 'Ensopado de Cogumelos', 'Armadura de Ferro'],
+    stock: 0,
+  },
+  {
+    id: 'kit_ferro_enc',
+    name: 'Kit Ferro Encantado',
+    emoji: '⚡',
+    tier: 'ferro',
+    price: 8.99,
+    description: 'Kit equilibrado para combate e sobrevivência com armadura encantada, espada reforçada e ferramentas essenciais para enfrentar qualquer batalha.',
+    itens: ['Espada de Ferro Afiada II', 'Picareta de Ferro Ef. II', '20x Bife Cozido', 'Sopa Suspeita', 'Armadura Ferro Enc.'],
+    stock: 0,
+  },
+  {
+    id: 'kit_rei_diamante',
+    name: 'Kit Rei do Diamante',
+    emoji: '💎',
+    tier: 'diamante',
+    price: 16.99,
+    description: 'Equipamento completo de diamante para dominar o servidor! Armadura, espada, picareta, maçã dourada e comida para começar com vantagem.',
+    itens: ['Espada de Diamante', 'Picareta de Diamante', '2x Maçã Dourada', '25x Carne Cozida', 'Armadura de Diamante'],
+    stock: 0,
+  },
+  {
+    id: 'kit_diamante_enc',
+    name: 'Kit Diamante Encantado',
+    emoji: '💠',
+    tier: 'diamante',
+    price: 22.99,
+    description: 'Versão aprimorada do Kit Diamante! Armadura e ferramentas com Inquebrávelv II e Proteção II em todas as peças para maior resistência.',
+    itens: ['Espada Diamante Inq. II', 'Picareta Diamante Inq. II', '2x Maçã Dourada', '25x Carne Cozida', 'Armadura Diamante Prot. II'],
+    stock: 0,
+  },
+  {
+    id: 'kit_imortal',
+    name: 'Kit Imortal',
+    emoji: '💀',
+    tier: 'especial',
+    price: 19.99,
+    description: 'Totem da imortalidade, maçã dourada e poções para sobreviver a qualquer combate. Seja impossível de matar!',
+    itens: ['2x Maçã Dourada Enc.', '4x Maçã Dourada', '4x Totem da Imortalidade', '3x Poção de Cura II'],
+    stock: 0,
+  },
+  {
+    id: 'kit_diamante_pvp',
+    name: 'Kit Diamante PVP',
+    emoji: '🗡️',
+    tier: 'diamante',
+    price: 56.99,
+    description: 'O kit definitivo para combate! Armadura e armas de diamante no nível máximo vanilla, com itens essenciais para dominar qualquer batalha.',
+    itens: ['Espada Diamante Af. V', 'Machado Diamante Af. V', 'Arco Inq. III', 'Escudo Inq. III', '5x Pérola do Fim', '1x Totem', 'Maça Pesada', '16x Flechas'],
+    stock: 0,
+  },
+  {
+    id: 'kit_netherite',
+    name: 'Kit Netherite',
+    emoji: '🖤',
+    tier: 'netherite',
+    price: 29.99,
+    description: 'Supere os limites do diamante! O Kit Netherita oferece equipamentos de elite com maior resistência e poder para os desafios mais difíceis.',
+    itens: ['Espada de Netherita', 'Picareta de Netherita', '1x Maçã Dourada', '30x Carne Cozida'],
+    stock: 0,
+  },
+  {
+    id: 'kit_netherite_enc',
+    name: 'Kit Netherite Encantado',
+    emoji: '✨',
+    tier: 'netherite',
+    price: 35.99,
+    description: 'A evolução definitiva! Armadura de Netherita com Proteção II, ferramentas com Inquebrávelv II e todos os recursos para se tornar uma lenda.',
+    itens: ['Espada Netherita Inq. II', 'Picareta Netherita Inq. II', '1x Maçã Dourada', '30x Carne Cozida', 'Armadura Netherita Prot. II'],
+    stock: 0,
+  },
+  {
+    id: 'kit_netherite_pvp',
+    name: 'Kit Netherite PVP',
+    emoji: '👑',
+    tier: 'netherite',
+    price: 86.99,
+    description: 'O kit definitivo para combate! Netherita encantada no nível máximo vanilla, com arco, escudo, totem e itens essenciais para dominar o servidor.',
+    itens: ['Espada Netherita Af. V', 'Machado Netherita Af. V', 'Arco Força V', 'Escudo Inq. III', '5x Pérola do Fim', '1x Totem', 'Maça Pesada', '16x Flechas'],
+    stock: 0,
+  },
+];
+
+async function loadKits() {
+  try {
+    const res  = await fetch(API_URL + '/api/kits');
+    const data = await res.json();
+    // Mescla com o fallback para ter tier/itens se não vier do backend
+    const merged = data.map(k => {
+      const fb = KITS_FALLBACK.find(f => f.id === k.id);
+      const obj = { ...fb, ...k, _fbImage: fb?.image };
+      return obj;
+    });
+    renderKits(merged.length ? merged : KITS_FALLBACK);
+  } catch(e) {
+    renderKits(KITS_FALLBACK);
+    console.warn('[SITE] Backend offline — exibindo kits locais.');
+  }
+}
+
+function renderKits(kits) {
+  const grid = document.getElementById('kit-grid');
+  if (!kits || !kits.length) {
+    grid.innerHTML = '<p style="color:var(--text-dim);text-align:center;padding:3rem;">Nenhum kit disponível no momento.</p>';
+    return;
+  }
+  grid.innerHTML = kits.map(k => {
+    const tier  = k.tier || 'ferro';
+    const itens = k.itens || parseBenefits(k.description).slice(0, 5);
+    const bannerHtml = (k.image || k._fbImage)
+      ? `<img class="kit-banner" src="${k.image}" alt="${k.name}" loading="lazy"/>`
+      : `<div class="kit-banner-placeholder">${k.emoji || '⚔️'}</div>`;
+    const itensTags  = itens.map(i => `<span class="kit-item-tag">▸ ${i}</span>`).join('');
+    const btnLabel   = tier === 'especial' ? 'COMPRAR KIT' :
+                       tier === 'netherite' ? '🖤 COMPRAR KIT' :
+                       tier === 'diamante'  ? '💎 COMPRAR KIT' : '⚔️ COMPRAR KIT';
+    return `
+      <div class="kit-card tier-${tier}">
+        ${bannerHtml}
+        <div class="kit-card-top">
+          <div class="kit-info">
+            <div class="kit-tier">DARKWEAVER · ${tier.toUpperCase()}</div>
+            <div class="kit-name">${k.name.toUpperCase()}</div>
+            <div class="kit-price">
+              <span class="kit-price-currency">R$</span>
+              <span class="kit-price-value">${fmtPrice(k.price)}</span>
+            </div>
+          </div>
+        </div>
+        <hr class="kit-divider" />
+        <p class="kit-desc">${k.description || ''}</p>
+        <div class="kit-itens">${itensTags}</div>
+        <span class="kit-stock em-estoque">∞ Estoque ilimitado</span>
+        <button class="kit-btn" onclick='openModal("kit", ${JSON.stringify(k)})'>
+          ${btnLabel}
+        </button>
+      </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MODAL (compartilhado entre VIP e Kit)
+// ═══════════════════════════════════════════════════════════════
+function openModal(type, item) {
+  currentItem     = item;
+  currentItemType = type;
+
+  const isVip = type === 'vip';
+  document.getElementById('modal-title').textContent    = isVip ? '💎 COMPRAR VIP' : '⚔️ COMPRAR KIT';
+  document.getElementById('modal-vip-name').textContent  = item.name;
+  document.getElementById('modal-vip-price').textContent = 'R$ ' + fmtPrice(item.price);
+  document.getElementById('nick-input').value    = '';
+  document.getElementById('discord-input').value = '';
+  document.getElementById('form-error').innerHTML = '';
+  document.getElementById('form-area').style.display = 'block';
+  document.getElementById('pix-box').classList.remove('visible');
+  // Oculta campo Discord em kits (não tem cargo)
+  document.getElementById('discord-input').closest('.form-group').style.display = isVip ? 'block' : 'none';
+  if (pollInterval) clearInterval(pollInterval);
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  if (pollInterval) clearInterval(pollInterval);
+  currentPaymentId = null;
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ─── GERAR PIX ───────────────────────────────────────────────────
+async function gerarPix() {
+  const nick    = document.getElementById('nick-input').value.trim();
+  const discord = document.getElementById('discord-input').value.trim();
+  const errEl   = document.getElementById('form-error');
+  errEl.innerHTML = '';
+
+  if (!nick || nick.length < 3) {
+    errEl.innerHTML = '<div class="alert alert-error">⚠️ Informe um nick válido (mínimo 3 caracteres)</div>';
+    return;
+  }
+
+  const btn = document.querySelector('#form-area .btn-primary');
+  btn.textContent = 'GERANDO...';
+  btn.disabled = true;
+
+  try {
+    // Endpoint diferente para VIP e Kit
+    const endpoint = currentItemType === 'vip' ? '/api/pix' : '/api/kits/pix';
+    const body     = currentItemType === 'vip'
+      ? { vipId: currentItem.id, nick, discord: discord || null }
+      : { kitId: currentItem.id, nick };
+
+    const res  = await fetch(API_URL + endpoint, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao gerar PIX');
+
+    currentPaymentId = data.paymentId;
+    currentKitId = currentItem?.id || data.kitId;
+    currentNick = nick;
+
+    document.getElementById('pix-qr').src           = data.qrCodeBase64 || '';
+    document.getElementById('pix-code-text').value   = data.pixCopyCola  || '';
+    document.getElementById('pix-status').textContent = 'AGUARDANDO PAGAMENTO';
+    document.getElementById('pix-status').className   = 'pix-status';
+
+    document.getElementById('form-area').style.display = 'none';
+    document.getElementById('pix-box').classList.add('visible');
+
+    let checks = 0;
+    pollInterval = setInterval(() => {
+      checks++;
+      verificarPagamento(true);
+      if (checks > 120) clearInterval(pollInterval);
+    }, 5000);
+
+  } catch(e) {
+    errEl.innerHTML = `<div class="alert alert-error">❌ ${e.message}</div>`;
+  } finally {
+    btn.textContent = 'GERAR PIX';
+    btn.disabled    = false;
+  }
+}
+
+// ─── COPIAR PIX ──────────────────────────────────────────────────
+function copiarPix() {
+  const code = document.getElementById('pix-code-text').value;
+  navigator.clipboard.writeText(code)
+    .then(() => showToast('✅ CÓDIGO PIX COPIADO!'))
+    .catch(() => {});
+}
+
+// ─── VERIFICAR PAGAMENTO ─────────────────────────────────────────
+async function verificarPagamento(auto = false) {
+  if (!currentPaymentId) return;
+  try {
+    // Mesmo endpoint de status — server distingue pelo tipo da order
+    const endpoint = currentItemType === 'vip'
+      ? '/api/pix/status/'
+      : '/api/kits/pix/status/';
+    const res  = await fetch(API_URL + endpoint + currentPaymentId);
+    const data = await res.json();
+
+    if (data.status === 'approved') {
+      clearInterval(pollInterval);
+      const statusEl = document.getElementById('pix-status');
+      statusEl.textContent = currentItemType === 'vip'
+        ? '✅ PAGAMENTO CONFIRMADO — VIP ATIVADO!'
+        : '✅ PAGAMENTO CONFIRMADO — ENTREGANDO KIT...';
+      statusEl.className = 'pix-status paid';
+
+      if (currentItemType === 'kit') {
+        try {
+          const deliverRes = await fetch(API_URL + '/api/kits/pix/deliver', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ paymentId: currentPaymentId, kitId: currentKitId, nick: currentNick })
+          });
+          const deliverData = await deliverRes.json();
+          if (!deliverRes.ok) throw new Error(deliverData.error || 'Erro na entrega');
+          statusEl.textContent = '✅ PAGAMENTO CONFIRMADO — KIT ENTREGUE!';
+          showToast('🎉 KIT ENTREGUE! VERIFIQUE SEU INVENTÁRIO!', 5000);
+        } catch (e) {
+          statusEl.textContent = '✅ PAGO — ERRO AO ENTREGAR, CHAME A STAFF';
+          showToast('⚠️ Pagamento aprovado, mas deu erro na entrega: ' + e.message, 7000);
+        }
+      } else {
+        statusEl.textContent = '✅ PAGAMENTO CONFIRMADO — VIP ATIVADO!';
+        showToast('🎉 VIP ATIVADO! BEM-VINDO AO DARKWEAVER!', 5000);
+      }
+    } else if (!auto) {
+      showToast('⏳ Ainda aguardando confirmação do PIX...');
+    }
+  } catch(e) {
+    if (!auto) showToast('❌ Erro ao verificar pagamento');
+  }
+}
+
+// ─── LOAD ONLINE COUNT ───────────────────────────────────────────
+async function loadOnline() {
+  try {
+    const res  = await fetch(API_URL + '/api/online');
+    const data = await res.json();
+    document.getElementById('stat-online').textContent = data.online ?? '?';
+  } catch(e) {
+    document.getElementById('stat-online').textContent = '?';
+  }
+}
+
+// ─── INIT ────────────────────────────────────────────────────────
+loadVips();
+loadKits();
+loadOnline();
+setInterval(loadOnline, 30000);
+</script>
+</body>
+</html>

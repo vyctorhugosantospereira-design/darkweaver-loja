@@ -1,0 +1,20 @@
+{
+  "name": "darkweaver-site",
+  "version": "1.0.0",
+  "description": "DarkWeaver VIP Store — Site + Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "netlify dev",
+    "build": "echo \"Site pronto para Netlify\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "serverless-http": "^3.2.0",
+    "rcon-client": "^4.2.5"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.38.1"
+  }
+}
