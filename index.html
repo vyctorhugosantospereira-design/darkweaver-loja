@@ -1024,7 +1024,7 @@
   <div class="section-label">// LOJA VIP</div>
   <h2 class="section-title">ESCOLHA SEU VIP</h2>
   <p class="section-desc">
-    Ativação automática assim que o pagamento PIX for confirmado. Sem espera, sem burocracia.
+    VIP de 30 dias. Se o jogador estiver offline, o VIP fica reservado e será ativado automaticamente quando ele entrar.
   </p>
   <div class="vip-grid" id="vip-grid">
     <div class="vip-loading">CARREGANDO VIPS</div>
@@ -1504,8 +1504,18 @@ async function verificarPagamento(auto = false) {
           showToast('⏳ Pagamento aprovado. O sistema está processando sua entrega.', 7000);
         }
       } else {
-        statusEl.textContent = '✅ PAGAMENTO CONFIRMADO — VIP ATIVADO!';
-        showToast('🎉 VIP ATIVADO! BEM-VINDO AO DARKWEAVER!', 5000);
+        const delivery = data.delivery || {};
+
+        if (delivery.delivered === true) {
+          statusEl.textContent = '✅ PAGAMENTO CONFIRMADO — VIP ATIVADO POR 30 DIAS!';
+          showToast('🎉 VIP ATIVADO! BEM-VINDO AO DARKWEAVER!', 5000);
+        } else if (delivery.pending === true || delivery.reason === 'player_offline') {
+          statusEl.textContent = '⏳ PAGAMENTO APROVADO — AGUARDANDO O PLAYER FICAR ONLINE';
+          showToast('⏳ VIP reservado. Entre no servidor para ativar automaticamente.', 7000);
+        } else {
+          statusEl.textContent = '⏳ PAGAMENTO APROVADO — AGUARDANDO ATIVAÇÃO AUTOMÁTICA';
+          showToast('⏳ Pagamento aprovado. O sistema está processando seu VIP.', 7000);
+        }
       }
     } else if (!auto) {
       showToast('⏳ Ainda aguardando confirmação do PIX...');
