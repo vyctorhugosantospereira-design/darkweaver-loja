@@ -1008,6 +1008,56 @@
       color: transparent;
     }
 
+
+    /* ── IP JAVA / BEDROCK ───────────────────────────────────── */
+    .server-access {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: -4rem auto 3rem;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .access-card {
+      background: rgba(13,7,20,0.88);
+      border: 1px solid var(--purple);
+      border-radius: 8px;
+      padding: 1.2rem;
+      box-shadow: 0 0 30px rgba(184,108,255,0.18);
+    }
+
+    .access-card h3 {
+      font-family: var(--pixel);
+      font-size: 0.55rem;
+      color: var(--green);
+      margin-bottom: 0.8rem;
+      letter-spacing: 0.08em;
+    }
+
+    .access-line {
+      font-family: var(--pixel);
+      font-size: 0.45rem;
+      color: #fff;
+      line-height: 1.8;
+      word-break: break-all;
+    }
+
+    .access-copy {
+      margin-top: 0.9rem;
+      width: 100%;
+      font-family: var(--pixel);
+      font-size: 0.42rem;
+      border: 1px solid var(--green-dim);
+      background: linear-gradient(135deg, #b86cff, #7d3cff);
+      color: #fff;
+      padding: 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
     /* ── RESPONSIVE ───────────────────────────────────────────── */
     @media (max-width: 640px) {
       .nav-links { display: none; }
@@ -1120,7 +1170,7 @@
     <li><a href="#kits">Kits</a></li>
     <li><a href="#como-funciona">Como Funciona</a></li>
   </ul>
-  <button class="nav-ip" onclick="copyIP()">zoe.lura.pro:35580</button>
+  <button class="nav-ip" onclick="copyIP()">JAVA: zoe.lura.pro:35580</button>
 </nav>
 
 <!-- ── HERO ─────────────────────────────────────────────────────── -->
@@ -1140,6 +1190,22 @@
   </div>
 </div>
 
+<!-- ── ACESSO JAVA / BEDROCK ────────────────────────────────────── -->
+<div class="server-access">
+  <div class="access-card">
+    <h3>🎮 JAVA</h3>
+    <div class="access-line">IP: zoe.lura.pro:35580</div>
+    <button class="access-copy" onclick="copyText('zoe.lura.pro:35580', '✅ IP JAVA COPIADO!')">COPIAR IP JAVA</button>
+  </div>
+
+  <div class="access-card">
+    <h3>📱 BEDROCK</h3>
+    <div class="access-line">IP: zoe.lura.pro</div>
+    <div class="access-line">PORTA: 35580</div>
+    <button class="access-copy" onclick="copyText('zoe.lura.pro', '✅ IP BEDROCK COPIADO!')">COPIAR IP BEDROCK</button>
+  </div>
+</div>
+
 <!-- ── STATS ────────────────────────────────────────────────────── -->
 <div class="stats-bar">
   <div class="stat">
@@ -1147,8 +1213,8 @@
     <span class="stat-label">Jogadores Online</span>
   </div>
   <div class="stat">
-    <span class="stat-value">1.21</span>
-    <span class="stat-label">Versão Minecraft</span>
+    <span class="stat-value">JAVA + BEDROCK</span>
+    <span class="stat-label">Compatível</span>
   </div>
   <div class="stat">
     <span class="stat-value">24/7</span>
@@ -1244,7 +1310,7 @@
 
 <!-- ── FOOTER ────────────────────────────────────────────────────── -->
 <footer>
-  <p><span>DARKWEAVER</span> &nbsp;·&nbsp; zoe.lura.pro:35580 &nbsp;·&nbsp; Pagamentos processados com segurança via Mercado Pago</p>
+  <p><span>DARKWEAVER</span> &nbsp;·&nbsp; JAVA: zoe.lura.pro:35580 &nbsp;·&nbsp; BEDROCK: zoe.lura.pro PORTA 35580</p>
   <p style="margin-top:0.5rem; font-size:0.72rem;">© 2026 DarkWeaver. Não somos afiliados à Mojang Studios.</p>
 </footer>
 
@@ -1369,11 +1435,15 @@ function showToast(msg, duration = 2500) {
   setTimeout(() => t.classList.remove('show'), duration);
 }
 
+function copyText(text, msg) {
+  navigator.clipboard.writeText(text)
+    .then(() => showToast(msg || '✅ COPIADO!'))
+    .catch(() => showToast(text));
+}
+
 // ─── COPY IP ─────────────────────────────────────────────────────
 function copyIP() {
-  navigator.clipboard.writeText('zoe.lura.pro:35580')
-    .then(() => showToast('✅ IP COPIADO!'))
-    .catch(() => showToast('IP: zoe.lura.pro:35580'));
+  copyText('zoe.lura.pro:35580', '✅ IP JAVA COPIADO!');
 }
 
 // ─── HELPERS ─────────────────────────────────────────────────────
