@@ -153,7 +153,7 @@
     .hero-sub {
       font-size: 1.05rem;
       color: var(--text-dim);
-      max-width: 520px;
+      max-width: 920px;
       line-height: 1.7;
       margin-bottom: 2.5rem;
     }
@@ -1185,7 +1185,7 @@
 
     .test-panel {
       width: 100%;
-      max-width: 520px;
+      max-width: 920px;
       background: var(--bg2);
       border: 1px solid var(--purple);
       border-radius: 8px;
@@ -1224,6 +1224,103 @@
       border-radius: 4px;
       padding: 0.75rem 1rem;
       outline: none;
+    }
+
+
+    .test-tabs {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .test-tab {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: .55rem .7rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--pixel);
+      font-size: .38rem;
+    }
+    .test-tab.active {
+      border-color: var(--purple);
+      color: var(--green);
+      box-shadow: 0 0 14px rgba(184,108,255,.18);
+    }
+    .admin-panel-view { display: none; }
+    .admin-panel-view.active { display: block; }
+    .admin-grid-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: .7rem;
+      margin-bottom: 1rem;
+    }
+    .admin-stat-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .85rem;
+    }
+    .admin-stat-card strong {
+      display: block;
+      color: var(--green);
+      font-family: var(--pixel);
+      font-size: .5rem;
+      margin-bottom: .45rem;
+    }
+    .admin-stat-card span { color: var(--text-dim); font-size: .75rem; }
+    .admin-table-wrap {
+      max-height: 360px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: rgba(0,0,0,.18);
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .78rem;
+      min-width: 720px;
+    }
+    .admin-table th, .admin-table td {
+      border-bottom: 1px solid var(--border);
+      padding: .7rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    .admin-table th {
+      color: var(--green);
+      font-family: var(--pixel);
+      font-size: .36rem;
+      position: sticky;
+      top: 0;
+      background: var(--bg2);
+      z-index: 1;
+    }
+    .admin-pill {
+      display: inline-block;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: .22rem .45rem;
+      font-size: .7rem;
+      color: var(--text-dim);
+    }
+    .admin-pill.ok { color: #88ff9a; border-color: #1a6b2d; }
+    .admin-pill.warn { color: #ffd166; border-color: #7a5b11; }
+    .admin-pill.bad { color: #ff8888; border-color: #6b1a1a; }
+    .admin-small-btn {
+      background: #2d0f0f;
+      color: #ffaaaa;
+      border: 1px solid #6b1a1a;
+      padding: .45rem .55rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: .72rem;
+    }
+    .admin-refresh {
+      margin-bottom: .8rem;
+      width: 100%;
     }
 
     .test-panel-result {
@@ -1455,13 +1552,13 @@
 </div>
 
 
-<!-- ── BOTÃO SECRETO DE TESTE ───────────────────────────────────── -->
+<!-- ── BOTÃO SECRETO / PAINEL ADMIN ─────────────────────────────── -->
 <button class="secret-test-btn" title="Painel secreto" onclick="openTestPanel()"></button>
 
 <div class="test-panel-overlay" id="test-panel-overlay">
   <div class="test-panel">
     <div class="test-panel-header">
-      <span class="test-panel-title">⚙️ PAINEL SECRETO DE TESTES</span>
+      <span class="test-panel-title">⚙️ PAINEL SECRETO DARKWEAVER</span>
       <button class="modal-close" onclick="closeTestPanel()">✕</button>
     </div>
     <div class="test-panel-body">
@@ -1470,31 +1567,71 @@
         <input class="form-input" id="test-password" type="password" placeholder="Senha do painel" />
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Nick no Minecraft</label>
-        <input class="form-input" id="test-nick" type="text" placeholder="NickExato"
-               maxlength="16" oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'')" />
+      <div class="test-tabs">
+        <button class="test-tab active" onclick="switchAdminTab('testes')">🧪 TESTAR</button>
+        <button class="test-tab" onclick="switchAdminTab('compras')">🧾 COMPRAS</button>
+        <button class="test-tab" onclick="switchAdminTab('vips')">💎 VIPS ATIVOS</button>
+        <button class="test-tab" onclick="switchAdminTab('pendentes')">⏳ PENDENTES</button>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Tipo</label>
-        <select id="test-type" onchange="loadTestItems()">
-          <option value="kit">Kit</option>
-          <option value="vip">VIP</option>
-        </select>
+      <div class="admin-panel-view active" id="view-testes">
+        <div class="form-group">
+          <label class="form-label">Nick no Minecraft</label>
+          <input class="form-input" id="test-nick" type="text" placeholder="NickExato"
+                 maxlength="16" oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'')" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tipo</label>
+          <select id="test-type" onchange="loadTestItems()">
+            <option value="kit">Kit</option>
+            <option value="vip">VIP</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Item para testar</label>
+          <select id="test-item"></select>
+        </div>
+
+        <button class="btn-primary" style="width:100%;font-size:0.5rem;" onclick="sendTestDelivery()">
+          ENVIAR TESTE
+        </button>
+
+        <div class="test-panel-result" id="test-result">
+          O jogador precisa estar online para receber o teste.
+        </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Item para testar</label>
-        <select id="test-item"></select>
+      <div class="admin-panel-view" id="view-compras">
+        <button class="btn-primary admin-refresh" onclick="loadAdminOverview()">ATUALIZAR PAINEL</button>
+        <div class="admin-grid-stats" id="admin-stats"></div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Tipo</th><th>Nick</th><th>Produto</th><th>Valor</th><th>Status</th><th>Data</th></tr></thead>
+            <tbody id="admin-orders-body"><tr><td colspan="6">Clique em atualizar.</td></tr></tbody>
+          </table>
+        </div>
       </div>
 
-      <button class="btn-primary" style="width:100%;font-size:0.5rem;" onclick="sendTestDelivery()">
-        ENVIAR TESTE
-      </button>
+      <div class="admin-panel-view" id="view-vips">
+        <button class="btn-primary admin-refresh" onclick="loadAdminOverview()">ATUALIZAR VIPS</button>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Nick</th><th>VIP</th><th>Dias restantes</th><th>Expira</th><th>Origem</th><th>Ação</th></tr></thead>
+            <tbody id="admin-vips-body"><tr><td colspan="6">Clique em atualizar.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
 
-      <div class="test-panel-result" id="test-result">
-        O jogador precisa estar online para receber o teste.
+      <div class="admin-panel-view" id="view-pendentes">
+        <button class="btn-primary admin-refresh" onclick="loadAdminOverview()">ATUALIZAR PENDENTES</button>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Tipo</th><th>Nick</th><th>Produto</th><th>Status</th><th>Data</th><th>Ação</th></tr></thead>
+            <tbody id="admin-pending-body"><tr><td colspan="6">Clique em atualizar.</td></tr></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -1913,7 +2050,9 @@ async function loadOnline() {
 }
 
 
-// ─── PAINEL SECRETO DE TESTES ───────────────────────────────────
+// ─── PAINEL SECRETO / ADMIN ─────────────────────────────────────
+let adminOverviewCache = null;
+
 async function openTestPanel() {
   document.getElementById('test-panel-overlay').classList.add('open');
   await loadTestItems();
@@ -1926,6 +2065,186 @@ function closeTestPanel() {
 document.getElementById('test-panel-overlay')?.addEventListener('click', function(e) {
   if (e.target === this) closeTestPanel();
 });
+
+function switchAdminTab(tab) {
+  document.querySelectorAll('.test-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.admin-panel-view').forEach(v => v.classList.remove('active'));
+
+  const order = ['testes','compras','vips','pendentes'];
+  const idx = order.indexOf(tab);
+  if (idx >= 0) document.querySelectorAll('.test-tab')[idx]?.classList.add('active');
+
+  document.getElementById('view-' + tab)?.classList.add('active');
+
+  if (tab !== 'testes') loadAdminOverview();
+}
+
+function fmtDate(ts) {
+  if (!ts) return '—';
+  try { return new Date(Number(ts)).toLocaleString('pt-BR'); }
+  catch(e) { return '—'; }
+}
+
+function statusPill(text, type = '') {
+  return `<span class="admin-pill ${type}">${text || '—'}</span>`;
+}
+
+async function loadAdminOverview() {
+  const password = document.getElementById('test-password').value;
+  if (!password) {
+    showToast('❌ Digite a senha do painel.');
+    return;
+  }
+
+  try {
+    const res = await fetch(API_URL + '/api/admin/overview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao carregar painel');
+
+    adminOverviewCache = data;
+    renderAdminStats(data.stats || {});
+    renderAdminOrders(data.orders || []);
+    renderAdminVips(data.activeVips || []);
+    renderAdminPending([...(data.pendingVips || []), ...(data.pendingKits || [])]);
+
+    showToast('✅ Painel atualizado!', 2500);
+  } catch(e) {
+    showToast('❌ ' + e.message, 4000);
+  }
+}
+
+function renderAdminStats(stats) {
+  const el = document.getElementById('admin-stats');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="admin-stat-card"><strong>R$ ${fmtPrice(stats.totalVendido || 0)}</strong><span>Total vendido</span></div>
+    <div class="admin-stat-card"><strong>${stats.totalCompras || 0}</strong><span>Compras</span></div>
+    <div class="admin-stat-card"><strong>${stats.vipsAtivos || 0}</strong><span>VIPs ativos</span></div>
+    <div class="admin-stat-card"><strong>${stats.testesAtivos || 0}</strong><span>Testes ativos</span></div>
+    <div class="admin-stat-card"><strong>${stats.pendentes || 0}</strong><span>Pendentes offline</span></div>
+  `;
+}
+
+function renderAdminOrders(orders) {
+  const body = document.getElementById('admin-orders-body');
+  if (!body) return;
+  if (!orders.length) {
+    body.innerHTML = '<tr><td colspan="6">Nenhuma compra registrada.</td></tr>';
+    return;
+  }
+
+  body.innerHTML = orders.slice(0, 120).map(o => {
+    const type = o.type === 'kit' ? 'Kit' : 'VIP';
+    const produto = o.vipName || o.kitName || o.vipId || o.kitId || '—';
+    let st = o.status || o.deliveryStatus || '—';
+    let cls = (o.delivered || st === 'approved') ? 'ok' : (String(st).includes('pending') ? 'warn' : '');
+    if (o.removed) { st = 'removido'; cls = 'bad'; }
+    return `<tr>
+      <td>${type}</td>
+      <td>${o.nick || '—'}</td>
+      <td>${produto}</td>
+      <td>R$ ${fmtPrice(o.price || 0)}</td>
+      <td>${statusPill(st, cls)}</td>
+      <td>${fmtDate(o.createdAt)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAdminVips(vips) {
+  const body = document.getElementById('admin-vips-body');
+  if (!body) return;
+  if (!vips.length) {
+    body.innerHTML = '<tr><td colspan="6">Nenhum VIP ativo ou registrado.</td></tr>';
+    return;
+  }
+
+  body.innerHTML = vips.map(v => {
+    const ativo = v.ativo && !v.removed;
+    const dias = v.diasRestantes ?? '—';
+    const origem = v.isTest ? 'Teste' : (v.source || 'site');
+    const acao = ativo
+      ? `<button class="admin-small-btn" onclick="removeVipAdmin('${String(v.paymentId || v.id).replace(/'/g, "\\'")}')">Remover</button>`
+      : statusPill('Inativo', 'bad');
+
+    return `<tr>
+      <td>${v.nick || '—'}</td>
+      <td>${v.vipName || v.vipId || '—'}<br><small>${v.lpGroup || ''}</small></td>
+      <td>${ativo ? statusPill(dias + ' dia(s)', dias <= 3 ? 'warn' : 'ok') : statusPill('Expirado/removido', 'bad')}</td>
+      <td>${fmtDate(v.expiresAt)}</td>
+      <td>${origem}</td>
+      <td>${acao}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAdminPending(items) {
+  const body = document.getElementById('admin-pending-body');
+  if (!body) return;
+  if (!items.length) {
+    body.innerHTML = '<tr><td colspan="6">Nenhum pendente offline.</td></tr>';
+    return;
+  }
+
+  body.innerHTML = items.map(p => {
+    const type = p.type === 'kit' ? 'Kit' : 'VIP';
+    const produto = p.vipName || p.kitName || p.vipId || p.kitId || '—';
+    const safeType = String(p.type).replace(/'/g, "\\'");
+    const safePayment = String(p.paymentId).replace(/'/g, "\\'");
+    const safeNickKey = String(p.nickKey || p.nick || '').toLowerCase().replace(/'/g, "\\'");
+    return `<tr>
+      <td>${type}</td>
+      <td>${p.nick || p.nickKey || '—'}</td>
+      <td>${produto}</td>
+      <td>${statusPill(p.status || 'pending_offline', 'warn')}</td>
+      <td>${fmtDate(p.createdAt)}</td>
+      <td><button class="admin-small-btn" onclick="removePendingAdmin('${safeType}','${safePayment}','${safeNickKey}')">Remover</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function removeVipAdmin(paymentId) {
+  const password = document.getElementById('test-password').value;
+  if (!password) return showToast('❌ Digite a senha.');
+  if (!confirm('Remover esse VIP do jogador e marcar como removido?')) return;
+
+  try {
+    const res = await fetch(API_URL + '/api/admin/remove-vip', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, paymentId })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao remover VIP');
+    showToast('✅ ' + (data.message || 'VIP removido'), 4000);
+    await loadAdminOverview();
+  } catch(e) {
+    showToast('❌ ' + e.message, 5000);
+  }
+}
+
+async function removePendingAdmin(type, paymentId, nickKey) {
+  const password = document.getElementById('test-password').value;
+  if (!password) return showToast('❌ Digite a senha.');
+  if (!confirm('Remover essa entrega pendente?')) return;
+
+  try {
+    const res = await fetch(API_URL + '/api/admin/remove-pending', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, type, paymentId, nickKey })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao remover pendente');
+    showToast('✅ Pendente removido!', 3000);
+    await loadAdminOverview();
+  } catch(e) {
+    showToast('❌ ' + e.message, 5000);
+  }
+}
 
 async function loadTestItems() {
   const type = document.getElementById('test-type')?.value || 'kit';
@@ -1981,11 +2300,13 @@ async function sendTestDelivery() {
 
     result.textContent = `✅ ${data.message}: ${data.itemName} para ${data.nick}`;
     showToast('✅ Teste enviado com sucesso!', 4000);
+    await loadAdminOverview().catch(() => {});
   } catch(e) {
     result.textContent = '❌ ' + e.message;
     showToast('❌ Erro no teste', 4000);
   }
 }
+
 
 
 // ─── INIT ────────────────────────────────────────────────────────
