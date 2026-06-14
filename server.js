@@ -62,6 +62,7 @@ const VIP_PENDING_FILE = path.join(CONFIG.BOT_DIR, 'mc_vip_pending.json');
 const MC_KITS_FILE        = path.join(CONFIG.BOT_DIR, 'mc_kits.json');
 const KIT_ORDERS_FILE     = path.join(CONFIG.BOT_DIR, 'mc_kit_orders_site.json');
 const KIT_PENDING_FILE    = path.join(CONFIG.BOT_DIR, 'mc_kit_pending_site.json');
+const TEST_LOG_FILE       = path.join(CONFIG.BOT_DIR, 'mc_test_logs.json');
 
 function loadJSON(file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
@@ -730,6 +731,19 @@ app.post('/api/admin/test-deliver', async (req, res) => {
       if (!kit) return res.status(404).json({ error: 'Kit não encontrado' });
 
       await entregarKit(nick, kit);
+
+      const testLogs = loadJSON(TEST_LOG_FILE, []);
+      testLogs.push({
+        id: 'TEST-KIT-' + Date.now(),
+        type: 'kit',
+        nick,
+        itemId: kit.id,
+        itemName: kit.name,
+        createdAt: Date.now(),
+        source: 'test_panel'
+      });
+      saveJSON(TEST_LOG_FILE, testLogs);
+
       return res.json({
         ok: true,
         delivered: true,
@@ -765,6 +779,20 @@ app.post('/api/admin/test-deliver', async (req, res) => {
       };
       saveJSON(VIP_FILE, vips);
 
+      const testLogs = loadJSON(TEST_LOG_FILE, []);
+      testLogs.push({
+        id: testPaymentId,
+        type: 'vip',
+        nick,
+        itemId: vip.id,
+        itemName: vip.name,
+        lpGroup: vip.lpGroup,
+        expiresAt,
+        createdAt: Date.now(),
+        source: 'test_panel'
+      });
+      saveJSON(TEST_LOG_FILE, testLogs);
+
       return res.json({
         ok: true,
         delivered: true,
@@ -782,6 +810,156 @@ app.post('/api/admin/test-deliver', async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+
+// ─── PAINEL ADMIN: COMPRAS / VIPS / TESTES ────────────────────────────────
+function checkAdminPassword(req) {
+  const bodyPass = req.body?.password;
+  const queryPass = req.query?.password;
+  return String(bodyPass || queryPass || '') === String(CONFIG.TEST_ADMIN_PASSWORD || '');
+}
+
+function daysLeft(expiresAt) {
+  if (!expiresAt) return null;
+  return Math.max(0, Math.ceil((Number(expiresAt) - Date.now()) / (24 * 60 * 60 * 1000)));
+}
+
+function asArrayFromObject(obj) {
+  return Object.entries(obj || {}).map(([id, value]) => ({ id, ...value }));
+}
+
+app.post('/api/admin/overview', async (req, res) => {
+  try {
+    if (!checkAdminPassword(req)) return res.status(403).json({ error: 'Senha incorreta' });
+
+    await processPendingVips().catch(e => console.error('[ADMIN] pending vips:', e.message));
+    await processExpiredVips().catch(e => console.error('[ADMIN] expired vips:', e.message));
+
+    const shop = loadJSON(VIP_SHOP_FILE, []);
+    const vips = loadJSON(VIP_FILE, {});
+    const vipOrders = loadJSON(VIP_ORDERS_FILE, {});
+    const pendingVips = loadJSON(VIP_PENDING_FILE, {});
+    const kitOrders = loadJSON(KIT_ORDERS_FILE, {});
+    const pendingKits = loadJSON(KIT_PENDING_FILE, {});
+
+    const vipList = asArrayFromObject(vips).map(v => ({
+      ...v,
+      diasRestantes: daysLeft(v.expiresAt),
+      ativo: !v.removed && (!v.expiresAt || Date.now() < Number(v.expiresAt)),
+      isTest: String(v.source || '').includes('test')
+    })).sort((a,b) => Number(b.activatedAt || b.createdAt || 0) - Number(a.activatedAt || a.createdAt || 0));
+
+    const ordersList = [
+      ...asArrayFromObject(vipOrders).map(o => ({ ...o, type: 'vip' })),
+      ...asArrayFromObject(kitOrders).map(o => ({ ...o, type: 'kit' })),
+    ].sort((a,b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+
+    const pendingVipList = [];
+    for (const [nickKey, list] of Object.entries(pendingVips || {})) {
+      for (const item of list || []) pendingVipList.push({ ...item, nickKey, type: 'vip' });
+    }
+
+    const pendingKitList = [];
+    for (const [nickKey, list] of Object.entries(pendingKits || {})) {
+      for (const item of list || []) pendingKitList.push({ ...item, nickKey, type: 'kit' });
+    }
+
+    const totalVendido = ordersList
+      .filter(o => o.status === 'approved' || o.delivered === true)
+      .reduce((sum, o) => sum + Number(o.price || 0), 0);
+
+    const ativos = vipList.filter(v => v.ativo).length;
+    const testesAtivos = vipList.filter(v => v.ativo && v.isTest).length;
+
+    res.json({
+      ok: true,
+      now: Date.now(),
+      stats: {
+        totalVendido,
+        totalCompras: ordersList.length,
+        vipsAtivos: ativos,
+        testesAtivos,
+        pendentes: pendingVipList.length + pendingKitList.length
+      },
+      orders: ordersList,
+      activeVips: vipList,
+      pendingVips: pendingVipList,
+      pendingKits: pendingKitList,
+      shop
+    });
+  } catch(e) {
+    console.error('[ADMIN] overview erro:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.post('/api/admin/remove-vip', async (req, res) => {
+  try {
+    if (!checkAdminPassword(req)) return res.status(403).json({ error: 'Senha incorreta' });
+
+    const { paymentId } = req.body || {};
+    if (!paymentId) return res.status(400).json({ error: 'paymentId obrigatório' });
+
+    const vips = loadJSON(VIP_FILE, {});
+    const entry = vips[paymentId];
+    if (!entry) return res.status(404).json({ error: 'VIP não encontrado' });
+
+    const shop = loadJSON(VIP_SHOP_FILE, []);
+    const vip = shop.find(v => v.id === entry.vipId) || {
+      id: entry.vipId,
+      name: entry.vipName,
+      lpGroup: entry.lpGroup
+    };
+
+    await removerVip(entry.nick, vip);
+
+    entry.removed = true;
+    entry.removedAt = Date.now();
+    entry.removedBy = 'admin_panel';
+    vips[paymentId] = entry;
+    saveJSON(VIP_FILE, vips);
+
+    const orders = loadJSON(VIP_ORDERS_FILE, {});
+    if (orders[paymentId]) {
+      orders[paymentId].removed = true;
+      orders[paymentId].removedAt = Date.now();
+      orders[paymentId].deliveryStatus = 'removed_by_admin';
+      saveJSON(VIP_ORDERS_FILE, orders);
+    }
+
+    res.json({ ok: true, message: `VIP removido de ${entry.nick}`, entry });
+  } catch(e) {
+    console.error('[ADMIN] remove-vip erro:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.post('/api/admin/remove-pending', (req, res) => {
+  try {
+    if (!checkAdminPassword(req)) return res.status(403).json({ error: 'Senha incorreta' });
+
+    const { type, paymentId, nickKey } = req.body || {};
+    if (!type || !paymentId || !nickKey) return res.status(400).json({ error: 'type, paymentId e nickKey são obrigatórios' });
+
+    const file = type === 'vip' ? VIP_PENDING_FILE : KIT_PENDING_FILE;
+    const pending = loadJSON(file, {});
+    const key = String(nickKey).toLowerCase();
+
+    if (!pending[key]) return res.status(404).json({ error: 'Pendente não encontrado' });
+
+    const before = pending[key].length;
+    pending[key] = pending[key].filter(x => String(x.paymentId) !== String(paymentId));
+    if (pending[key].length === 0) delete pending[key];
+
+    saveJSON(file, pending);
+
+    res.json({ ok: true, removed: before !== (pending[key]?.length || 0), message: 'Pendente removido' });
+  } catch(e) {
+    console.error('[ADMIN] remove-pending erro:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 
 // ─── WEBHOOK MERCADO PAGO (opcional — mais rápido que polling) ────────────
 app.post('/webhook/mp', async (req, res) => {
